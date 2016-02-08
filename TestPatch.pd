@@ -1,0 +1,162 @@
+#N canvas 134 35 1153 663 10;
+#X declare -lib mrPeach;
+#X obj 110 14 import mrPeach;
+#X obj 196 279 udpsend;
+#X msg 193 119 /stop 1;
+#X obj 311 -56 vsl 15 128 0 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 0 1;
+#X msg 295 94 /width1 \$1;
+#X obj 580 -39 vsl 15 128 0 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 6900 1;
+#X obj 782 -36 vsl 15 128 0.01 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 0 1;
+#X msg 772 103 /height1 \$1;
+#X obj 225 254 packOSC;
+#X obj 556 133 nbx 5 50 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 40
+-262144 -1 -1 0.543307 256;
+#X obj 784 131 nbx 5 50 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 40
+-262144 -1 -1 0 256;
+#X obj 290 139 nbx 5 50 0 0.5 0 0 empty empty empty 0 -8 0 40 -262144
+-1 -1 0 256;
+#X msg 1017 101 /heightLevel1 \$1;
+#X msg 1011 19 1;
+#X msg 1054 20 2;
+#X msg 788 -91 0.69;
+#X msg 998 152 1;
+#X msg 1041 153 2;
+#X msg 1004 234 /soundbank \$1;
+#X msg 1073 157 3;
+#X obj 44 24 unpackOSC;
+#X obj 58 62 print;
+#X msg 8 358 disconnect;
+#X msg 170 93 /start 1;
+#X obj 614 307 vsl 15 128 0 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 0 1;
+#X obj 598 534 nbx 5 50 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 40
+-262144 -1 -1 0 256;
+#X msg 598 505 /activityRight \$1;
+#X msg 920 374 1;
+#X msg 963 375 2;
+#X msg 995 379 3;
+#X msg 926 456 /armSideLevelRight \$1;
+#X msg 1066 383 5;
+#X msg 1032 381 4;
+#X obj 26 482 vsl 15 128 0.01 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 0 1;
+#X obj 19 665 nbx 5 50 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 25
+-262144 -1 -1 0 256;
+#X msg 26 438 0.69;
+#X obj 241 470 vsl 15 128 0.01 0.28 0 0 empty empty empty 0 -9 0 10
+-262144 -1 -1 3000 1;
+#X obj 234 653 nbx 5 50 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 20
+-262144 -1 -1 0.0737795 256;
+#X msg 241 426 0.69;
+#X msg 10 632 /armSideRight \$1;
+#X obj 388 364 vsl 15 128 0 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 0 1;
+#X obj 372 591 nbx 5 50 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 40
+-262144 -1 -1 0 256;
+#X msg 372 562 /activityNormal2 \$1;
+#X obj 561 -57 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 524 -77 bng 15 250 50 0 empty empty empty 17 7 0 10 -262144
+-1 -1;
+#X obj 165 505 vsl 15 128 0.01 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 0 1;
+#X obj 158 688 nbx 5 50 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 25
+-262144 -1 -1 0 256;
+#X msg 165 461 0.69;
+#X msg 149 655 /volume \$1;
+#X obj 609 -83 metro 100;
+#X msg 1066 -27 3;
+#X msg 1086 24 4;
+#X msg 707 -84 stop;
+#X msg 851 -81 1;
+#X obj 744 178 vsl 15 128 0.01 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 0 1;
+#X obj 746 345 nbx 5 50 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 40
+-262144 -1 -1 0 256;
+#X msg 733 318 /centerX \$1;
+#X msg 20 179 connect 127.0.0.1 57120;
+#X msg 34 132 connect 127.0.0.1 7002;
+#X obj 58 -32 udpreceive 7475;
+#X msg 556 105 /activityNormal1 \$1;
+#X msg 10 92 connect 127.0.0.1 9000;
+#X obj 899 -98 vsl 15 128 0.01 1 0 0 empty empty empty 0 -9 0 10 -262144
+-1 -1 12500 1;
+#X obj 901 69 nbx 5 50 -1e+37 1e+37 0 0 empty empty empty 0 -8 0 40
+-262144 -1 -1 0.984409 256;
+#X msg 889 41 /centerX1 \$1;
+#X msg 190 113 /start 1;
+#X msg 40 199 connect 127.0.0.1 57120;
+#X msg 54 152 connect 127.0.0.1 7002;
+#X msg 225 620 /closer/sender1/channe2 \$1;
+#X msg 9 234 connect 127.0.0.1 9677;
+#X connect 2 0 8 0;
+#X connect 3 0 4 0;
+#X connect 3 0 11 0;
+#X connect 4 0 8 0;
+#X connect 5 0 60 0;
+#X connect 5 0 9 0;
+#X connect 6 0 7 0;
+#X connect 6 0 10 0;
+#X connect 7 0 8 0;
+#X connect 8 0 1 0;
+#X connect 12 0 8 0;
+#X connect 13 0 12 0;
+#X connect 14 0 12 0;
+#X connect 15 0 6 0;
+#X connect 16 0 18 0;
+#X connect 17 0 18 0;
+#X connect 18 0 8 0;
+#X connect 19 0 18 0;
+#X connect 20 0 21 0;
+#X connect 22 0 1 0;
+#X connect 23 0 8 0;
+#X connect 24 0 26 0;
+#X connect 24 0 25 0;
+#X connect 26 0 8 0;
+#X connect 27 0 30 0;
+#X connect 28 0 30 0;
+#X connect 29 0 30 0;
+#X connect 30 0 8 0;
+#X connect 31 0 30 0;
+#X connect 32 0 30 0;
+#X connect 33 0 39 0;
+#X connect 33 0 34 0;
+#X connect 35 0 33 0;
+#X connect 36 0 68 0;
+#X connect 36 0 37 0;
+#X connect 38 0 36 0;
+#X connect 39 0 8 0;
+#X connect 40 0 42 0;
+#X connect 40 0 41 0;
+#X connect 42 0 8 0;
+#X connect 43 0 5 0;
+#X connect 44 0 49 0;
+#X connect 44 0 23 0;
+#X connect 45 0 48 0;
+#X connect 45 0 46 0;
+#X connect 47 0 45 0;
+#X connect 48 0 8 0;
+#X connect 49 0 43 0;
+#X connect 49 0 6 0;
+#X connect 49 0 3 0;
+#X connect 50 0 12 0;
+#X connect 51 0 12 0;
+#X connect 52 0 49 0;
+#X connect 52 0 2 0;
+#X connect 53 0 6 0;
+#X connect 54 0 56 0;
+#X connect 54 0 55 0;
+#X connect 56 0 8 0;
+#X connect 57 0 1 0;
+#X connect 58 0 1 0;
+#X connect 59 0 20 0;
+#X connect 60 0 8 0;
+#X connect 61 0 1 0;
+#X connect 62 0 64 0;
+#X connect 62 0 63 0;
+#X connect 64 0 8 0;
+#X connect 68 0 8 0;
+#X connect 69 0 1 0;
