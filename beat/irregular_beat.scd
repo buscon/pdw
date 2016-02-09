@@ -1,5 +1,3 @@
-
-Synth(\ibeat)
 (
 Ndef(\ibeat, { arg speed = 1, volume = 0, scale_freq = 1, pitchRatio = 1, pitchDispertion = 0, timeDispertion = 0, which  = 0;
 	var ausgang, input;
@@ -14,17 +12,19 @@ Ndef(\ibeat, { arg speed = 1, volume = 0, scale_freq = 1, pitchRatio = 1, pitchD
 	ausgang = GVerb.ar(ausgang, 200, 2);
 	OffsetOut.ar(0, ausgang);
 }).play;
+
 SynthDef(\ibeat, { arg speed = 1, volume = 0.5, scale_freq = 1, pitchRatio = 1, pitchDispertion = 0, timeDispertion = 0, which  = 0;
 	var ausgang, input;
 	//speed = MouseX.kr(0.1,4, 0);
 	input = CoinGate.ar([5,20,4,7,6]/10 * speed.round(0.2), T2A.ar(Impulse.kr([5,5,5,10,10])) ) ;
-	ausgang= Ringz.ar(input, [45,250] * scale_freq,3,[1,0.5] ).sin.sum.tanh * 0.5 * EnvGen.ar(Env.perc(0.01, 0.3), doneAction:2) * volume;
+	ausgang= Ringz.ar(input, 250 * scale_freq,1,[1,0.5] ).sin.sum.tanh * 0.5 * EnvGen.ar(Env.perc(0.01, 0.3)) * volume;
 
-	//ausgang = SelectX.ar(which, [ausgang, PitchShift.ar(ausgang, 0.2, pitchRatio, pitchDispertion, timeDispertion)]);
+	ausgang = SelectX.ar(which, [ausgang, PitchShift.ar(ausgang, 0.2, pitchRatio, pitchDispertion, timeDispertion)]);
 
 	//ausgang = Pan2.ar(ausgang, BrownNoise.kr(1), volume);
-
-	ausgang = GVerb.ar(ausgang, 200, 2);
+	ausgang = RLPF.ar(ausgang, 500, 0.5);
+	ausgang = GVerb.ar(ausgang, 200, 4);
+    DetectSilence.ar(ausgang, doneAction:2);
 	OffsetOut.ar(0, ausgang);
 }).add;
 

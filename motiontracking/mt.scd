@@ -132,6 +132,7 @@ OSCdef( \actN, { |msg|
 
 	}, "/activityNormal1",
 nil, port);
+
 OSCdef( \centerX, { |msg|
 
 	var val = msg[1];
@@ -139,5 +140,6 @@ OSCdef( \centerX, { |msg|
 
 	}, "/centerX1",
 nil, port);
+
 )
 FreqScope.new

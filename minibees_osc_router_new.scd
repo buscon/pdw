@@ -63,12 +63,18 @@ data_sel = { arg val, which;
 			// strings
 
 
-		~string.set( \amp, ~val1.linlin(0, 0.0001 , 0, 1));
-		~string.set( \sustain, ~val1.linlin(0, 1 , 5, 0.1));
-		~string.set( \freq, ~val1.linexp(0.5, 1, 211, 250));
+		~string.set( \volume, val.linlin(0, 0.0001 , 0, 0.3));
+		~string.set( \volume2, val.linlin(0.4, 1 , 1, 2));
 
-		~string.set( \freq2, ~val1.linexp(0.8, 1, 0, 100));
-		~string.set( \mx, ~val1.linlin(0, 1, 0, 40));
+		~string.set( \sustain, val.linlin(0, 1 , 5, 0.1));
+		~string.set( \freq, val.linexp(0.5, 1, 211, 250));
+		~string.set( \lpfF, val.linexp(0.3, 1, 1000, 6000));
+
+			//"dev: ".post;
+		~string.set(\freq_dev, (val.linlin(0.4, 0.8, 0.1, 10) ));
+		~string.set(\fdecay, (val.linexp(0.5, 1, 0.01, 3).postln ));
+		~string.set( \freq2, val.linexp(0.8, 1, 0, 50));
+		~string.set( \mx, val.linlin(0, 0.8, 0, 20));
 
 
 		//if(~val1 > 0.03, {val = 1}, {val = 1}); ~string.set(\sensitive, val.postln);
@@ -76,7 +82,25 @@ data_sel = { arg val, which;
 		if((~val1 < 0.04), { sensitive = 0; });
 		//sensitive.postln;
 		//~string.set(\sensitive, ~val1.linlin(0.02, 0.04, 0, 1 ));
-	};
+	}
+
+		{ which == 5 } {
+~val1.postln;
+			Ndef(\complexB).set(\volume, ~val1.linlin(0, 0.1, 0, 0.5));
+
+			Ndef(\complexB).set(\volume2, ~val1.linlin(0.5, 1, 1, 2));
+			Ndef(\complexB).set(\lpfFreq, ~val1.linexp(0.1, 0.6, 50, 20000));
+
+			Ndef(\complexB).set(\hpfFreq, ~val1.linlin(0.7, 1, 10, 7000));
+
+
+
+			Ndef(\complexB).set(\speed, ~val1.linlin(0, 0.2, 2, 1.5));
+
+			Ndef(\complexB).set(\speed2, ~val1.linlin(0.7, 0.9, 0, -1.45));
+
+
+};
 	res;
 
 };
@@ -94,7 +118,9 @@ hyper_data_sel = { arg val, which;
 
 	}
 	{ which == 1} {
-		Synth(\kick, [\volume, 0.25]); Synth(\snare, [\volume, 0.1]);
+		Synth(\ibeat, [\scale_freq, exprand(0.2, 1).postln,\which, 0.5, \pitchRatio, 5.0.rand, \pitchDispertion, 3.0.rand, \timeDispertion, 3.0.rand.postln]);
+
+		//Synth(\kick, [\volume, 0.25]); Synth(\snare, [\volume, 0.01]);
 	}
 	{ which == 2} {
 		Ndef(\trigDrones).set(\select, 1.0.rand.postln );
@@ -152,7 +178,7 @@ OSCdef( \minibeeRouter, { |msg|
 
 	//("full messages" + msg).postln;
 
-	if ( msg[1] == 1,{
+	if ( msg[1] == 2,{
 
 		x1 = msg[2];
 		y1 = msg[3];
@@ -189,13 +215,13 @@ OSCdef( \minibeeRouter, { |msg|
 		oscar.sendMsg("/lastPeaky1", speedy1.lastPeak[0]);
 		oscar.sendMsg("/lastPeakz1", speedz1.lastPeak[0];);
 		});
-		data_sel.value(~val, which_data );
+		data_sel.value(~val1, which_data );
 
 
 		~t = Main.elapsedTime.asInt;
 
 //		if( (~lastPeak1[0] > 0.95) && (~now < ~t),
-		if( (~lastPeak1[0] > 0.75) && (~now < ~t),
+		if( (~val1 > 0.65) && (~now < ~t),
 
 			{
 
@@ -206,7 +232,7 @@ OSCdef( \minibeeRouter, { |msg|
 
 
 	});
-		if ( msg[1] == 2 ,{
+		if ( msg[1] == 1 ,{
 		x2 = msg[2];
 		y2 = msg[3];
 		z2 = msg[4];
@@ -255,14 +281,14 @@ e
 	m = SWPlotterMonitor.new( {
     //data to plot
     [
-    [~lastPeak1[0], ~val1, ~xyz1], // view the two streams superimposed
+    [ ~val1], // view the two streams superimposed
 //    [e, f], // view the two streams superimposed
 
     //[~e - ~f], // view their differene
     //[(~e- ~f).sign] // view sign of difference
     ]},
     200, //nr of points to plot
-    3, // channels
+    1, // channels
     0.25, // plot dtime
     1 // write every n data points
     ).start;

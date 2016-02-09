@@ -1,23 +1,21 @@
-((1/8!8) ++ (1/4!8) ++ [Dseq([1/16, 1/16], Drand([1, 2, 4], inf))] ++ [Dseq([1/32, 1/32], Drand([2, 4], inf))] )
-{ Schmidt.kr(SinOsc.kr(1, 0, 0.2), -0.15, 0.15)}.scope;
-
-
-1000/600
+// map it to mt! centerX control the filter , hi activity or a trigger control which (which is not interesting as continuous value)
 (
-SynthDef(\complexB, {arg distortion = 0, volume = 0, volume2 = 1;
 var wave, buf;
 wave = Wavetable.chebyFill(512, [1]);
 buf = Buffer.alloc(s, 1024, 1);
-
 buf.sendCollection(wave.asWavetableNoWrap);
 
-a = {
-var ctrigs, ctrigsB, freq, freqW, freqB, clicks, output, waves, bass, speed = 2;
+Ndef(\complexB, {arg distortion = 0, volume = 0.5, volume2 = 1,speed = 1.5 , speed2 = 0, hpfFreq = 10, lpfFreq = 20000, which = 0, filter = 0;
+
+
+var ctrigs, ctrigsB, freq, freqW, freqB, clicks, output, waves, bass;
+	which = MouseY.kr();
+	filter = MouseX.kr;
 ctrigs =
 {
 TDuty.ar
 (
-			Dxrand(((1/2!4) ++ (1/8!8) ++ (1/4!8) ++ [Dseq([1/16, 1/16], Drand([1, 2, 4], inf))] ++ [Dseq([1/32, 1/32], Drand([1, 2], inf))]  ) * 1.5 , inf), //see above logic
+			Dxrand(((1/2!4) ++ (1/8!8) ++ (1/4!8) ++ [Dseq([1/16, 1/16], Drand([1, 2, 4], inf))] ++ [Dseq([1/32, 1/32], Drand([1, 2], inf))]  ) * (speed + speed2), inf), //see above logic
 0,
 Dwhite(0.5, 1, inf) //trigger values are between 0.5, 1
 )
@@ -58,14 +56,14 @@ BPF.ar
 	//clicks = CombC.ar(clicks, 1, 0.07, 0.05, 1, clicks);
 //output = waves;
 	output = (bass + waves + clicks) * 0.5;
-	output = SelectX.ar(distortion, [output, CrossoverDistortion.ar(output, distortion.linlin(0, 1, 0, 0.9), distortion.linlin(0, 1, 0, 0.9)) * 0.05]);
+	//distortion = distortion.lag(0.2);
+	//output = SelectX.ar(distortion, [output, Smoot.ar(output, distortion.linlin(0, 1, 0, 0.9), distortion.linlin(0, 1, 0, 0.9)) * 0.05]);
+	output = RLPF.ar(output, lpfFreq, 0.7);
+	output = RHPF.ar(output, hpfFreq.lag(0.1), 0.7);
+	output = SelectX.ar(which, [output, Resonz.ar(output, filter.linexp(0, 1, 100, 6000), 0.2, filter.linexp(0, 1, 3.5, 9) )]);
 	output = MidEQ.ar(output, 2000, 0.7, 6) * volume * volume2;
-	output = GVerb.ar(output, 16, 1.24, 0.1, 0.95, 15, 0.dbamp, -9.dbamp, -11.dbamp);
-	Limiter.ar(output * 0.5);
-}.play;
+	output = GVerb.ar(output, 100, 1.24, 0.1, 0.95, 15, 0.dbamp, -9.dbamp, -11.dbamp);
+	//output = Limiter.ar(output * 0.5);
+	Out.ar(0, output);
+}).play;
 )
-a.stop;
-2000/10000
--3.dbamp
-
-FreqScope.new

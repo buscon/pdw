@@ -16,7 +16,7 @@
 		, lowPassQ.reciprocal
 	) * 1/4 * volume;
 	//s = Array.fill(n, RLPF.ar(Ringz.ar(PinkNoise.ar(0.1), {rrand(300, 10000)} * Select.kr(MouseX.kr(0, 1) * r.size, r).poll *0.2 ,{rrand(0.5, 1.5)}, n.reciprocal/4), 1000)) * 1/16;
-	AdCVerb.ar( s);
+	AdCVerb.ar( s, 2);
 
 }).play;
 

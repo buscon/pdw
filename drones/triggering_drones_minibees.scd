@@ -3,7 +3,7 @@
     // strummable guitar
 
     // use mouse to strum strings
-Ndef(\trigDrones, {| out = 0, speed = 0, select = 0, decaytime = 0.5, volume = 0, volume2 = 1, sensitive = 0, rate = 1, octave = 0.5 |
+Ndef(\trigDrones, {| out = 0, speed = 0, select = 0, decaytime = 0.5, volume = 0, volume2 = 1, sensitive = 0, rate = 1, octave = 0.5, lpfFreq = 4000 |
 
 	var pitch, mousex, ausgang, size, pluck, period, string,trigger = 0, triggerNote, timer;
 
@@ -32,7 +32,7 @@ size = 100;
 
 	period = Select.kr(mousex * pitch.size, pitch);
 
-	ausgang = RLPF.ar(Ringz.ar(pluck, {rrand(500, 10000)}.dup(12) * period * rate,{rrand(0.5, 1.5)}.dup(12) * decaytime, 0.1).mean, 8000 ) * 0.02;
+	ausgang = RLPF.ar(Ringz.ar(pluck, {rrand(500, 10000)}.dup(12) * period * rate,{rrand(0.5, 1.5)}.dup(12) * decaytime, 0.1).mean, lpfFreq ) * 0.02;
 		//string = LPF.ar(Ringz.ar(pluck, {rrand(500, 10000)}.dup(12) * period.poll,{rrand(0.5, 1.5)}.dup(12), 0.1).mean, 10000) * 0.2;
 
 	//ausgang = CombL.ar(string, period, period, 4);
