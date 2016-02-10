@@ -8,33 +8,41 @@
 ("/Users/marcello/Music/Supercollider/PdW/beat/irregular_beat.scd").openTextFile;
 
 ("/Users/marcello/Music/Supercollider/PdW/drones/triggering_drones_minibees.scd").load;
-("/Users/marcello/Music/Supercollider/PdW/granular/granulator.scd").load;
+("/Users/marcello/Music/Supercollider/PdW/granular/granulator.scd").openTextFile;
 ("/Users/marcello/Music/Supercollider/PdW/strings/3.scd").load;
+Ndef(\ibeat).stop
+Ndef(\ibeat).set(\volume, 0);
 (
-var speedx1, speedy1, speedz1, speedx2, speedy2, speedz2, xyz1, xyz2, speedAll1, speedAll2,  longval1, longval2,  long, changePos = 0, oscar, stlen= 5, ltlen = 50, debug = 0, oscar_there = 1, val = 0, data_sel, hyper_data_sel, which_data = 0,
+var speedx1, speedy1, speedz1, speedx2, speedy2, speedz2, xyz1, xyz2, speedAll1, speedAll2,  longval1, longval2,  long, changePos = 0, oscar, stlen= 5, ltlen = 50, debug = 0, oscar_there = 1, val = 0, data_sel, hyper_data_sel, which_data = 3,
 sensitive = 0,
 setup = 2, // setup
 x1, y1, z1, x2, y2, z2;
 
 data_sel = { arg val, which;
 	var res;
-
 	res = case
 		{ which == 0} {
 
 	}
 	{ which == 1} {
-		Ndef(\ibeat).play;
-		Ndef(\ibeat).set(\volume, ~val1.linlin(0, 0.02, 0, 0.5));
+		Ndef(\ibeat).set(\volume, 0);//~val1.linlin(0, 0.02, 0, 0.5));
 		Ndef(\ibeat).set(\speed, ((~val1 + ~val1 + longval1)/3).linlin(0, 1, 0, 4));
+		Ndef(\ibeat).set(\which, ~val1.linlin(0.2, 0.6, 0, 1));
+		Ndef(\ibeat).set(\pitch, ~val1.linlin(0.4, 0.8, 0, 1));
+		Ndef(\ibeat).set(\pitchDispertion, ~val1.linlin(0.5, 0.8, 0, 0.2));
+		Ndef(\ibeat).set(\timeDispertion, ~val1.linlin(0.6, 1, 0, 0.2));
 	}
 	{ which == 2 } {
 		Ndef(\trigDrones).play;
-		Ndef(\trigDrones).set(\volume, ~val1.linlin(0, 0.2, 0, 0.8));
+		Ndef(\trigDrones).set(\volume, ~val1.linlin(0, 0.2, 0, 1.2));
 		Ndef(\trigDrones).set(\volume2, ~val1.linlin(0.3, 1, 1, 3));
 		Ndef(\trigDrones).set(\speed, (~val1.linlin(0.15, 1, 0, 35) ));
 		Ndef(\trigDrones).set(\rate, (~val1.linlin(0.9, 0.95, 1, 1.25) ));
+		Ndef(\trigDrones).set(\lpfFreq, (val.linlin(0.2, 0.8, 3000, 8000) ));
+
 		Ndef(\trigDrones).set(\sensitive, (~val1.linlin(0.02, 0.04, 0, 1) ));
+
+
 	}
 	{ which == 3 } {
 		//granulator
@@ -42,8 +50,9 @@ data_sel = { arg val, which;
 		//~gran1.set( \dur, ~val1.linlin(0.8, 1.0, 0.2, 2));
 		//~gran1 = Synth(\gran);
 
-		~sample_id = 2;
-		~gran1.set(\bufNum, ~b[~sample_id].bufnum, \amtRnd, 0, \amFreq, 1000, \master_vol, 0.5, \dur, 0.25, \pos, 1.0.rand, \volume,1);
+		~sample_id = 1;
+
+		~gran1.set(\bufNum, ~b[~sample_id].bufnum, \amtRnd, 0, \amFreq, 1000, \master_vol, 2, \dur, 0.25, \pos, 1.0.rand, \volume,1);
 		//~gran2.set(\bufNum, ~b[1].bufnum, \amVol, 0, \amFreq, 1000, \master_vol, 0.5, \dur, 0.25, \pos, 1.0.rand, \volume,1);
 
 
@@ -72,20 +81,20 @@ data_sel = { arg val, which;
 
 			//"dev: ".post;
 		~string.set(\freq_dev, (val.linlin(0.4, 0.8, 0.1, 10) ));
-		~string.set(\fdecay, (val.linexp(0.5, 1, 0.01, 3).postln ));
+		~string.set(\sdecay, (val.linexp(0.5, 1, 1, 0.1) ));
 		~string.set( \freq2, val.linexp(0.8, 1, 0, 50));
 		~string.set( \mx, val.linlin(0, 0.8, 0, 20));
 
 
+
 		//if(~val1 > 0.03, {val = 1}, {val = 1}); ~string.set(\sensitive, val.postln);
-		if((sensitive == 0) && (~val1 > 0.04), {   Synth(\stringS);sensitive = 1;});
+		if((sensitive == 0) && (~val1 > 0.04), {   Synth(\stringS, [\freq2, 50.0.rand.postln, \freq_dev, 5.0.rand.postln]);sensitive = 1;});
 		if((~val1 < 0.04), { sensitive = 0; });
 		//sensitive.postln;
 		//~string.set(\sensitive, ~val1.linlin(0.02, 0.04, 0, 1 ));
 	}
 
 		{ which == 5 } {
-~val1.postln;
 			Ndef(\complexB).set(\volume, ~val1.linlin(0, 0.1, 0, 0.5));
 
 			Ndef(\complexB).set(\volume2, ~val1.linlin(0.5, 1, 1, 2));
@@ -118,16 +127,17 @@ hyper_data_sel = { arg val, which;
 
 	}
 	{ which == 1} {
-		Synth(\ibeat, [\scale_freq, exprand(0.2, 1).postln,\which, 0.5, \pitchRatio, 5.0.rand, \pitchDispertion, 3.0.rand, \timeDispertion, 3.0.rand.postln]);
+		Synth(\ibeat, [\scale_freq, exprand(0.2, 1),\which, 0.5, \pitchRatio, 1.0.rand, \pitchDispertion, 3.0.rand, \timeDispertion, 3.0.rand, \volume, 1]);
 
 		//Synth(\kick, [\volume, 0.25]); Synth(\snare, [\volume, 0.01]);
 	}
 	{ which == 2} {
-		Ndef(\trigDrones).set(\select, 1.0.rand.postln );
-		"octave: ".post;Ndef(\trigDrones).set(\octave, ([1, (5/4), 3/2].wchoose([0.4,0.3,0.3]) * [1, 1/4, 1/6, 1/8, 1.5, 2].wchoose([0.1, 0.2, 0.2, 0.2, 0.15, 0.15]) * 0.45).postln );
+		Ndef(\trigDrones).set(\select, 1.0.rand );
+		"octave: ".post;Ndef(\trigDrones).set(\octave, ([1, (5/4), 3/2].wchoose([0.4,0.3,0.3]) * [1, 1/4, 1/6, 1/8, 1.5, 2].wchoose([0.1, 0.2, 0.2, 0.2, 0.15, 0.15]) * 0.45) );
 	}
 		{ which == 3} {
 		"pos: ".post;~gran1.set( \pos, ~samples_data[~sample_id][8].choose.postln);
+		~gran1.set( \rate, rrand(0.5, 1.2));
 	}
 
 		{ which == 4} {
@@ -178,7 +188,7 @@ OSCdef( \minibeeRouter, { |msg|
 
 	//("full messages" + msg).postln;
 
-	if ( msg[1] == 2,{
+	if ( msg[1] == 1,{
 
 		x1 = msg[2];
 		y1 = msg[3];
@@ -221,7 +231,7 @@ OSCdef( \minibeeRouter, { |msg|
 		~t = Main.elapsedTime.asInt;
 
 //		if( (~lastPeak1[0] > 0.95) && (~now < ~t),
-		if( (~val1 > 0.65) && (~now < ~t),
+		if( (~val1 > 0.75) && (~now < ~t),
 
 			{
 
@@ -232,7 +242,7 @@ OSCdef( \minibeeRouter, { |msg|
 
 
 	});
-		if ( msg[1] == 1 ,{
+		if ( msg[1] == 2 ,{
 		x2 = msg[2];
 		y2 = msg[3];
 		z2 = msg[4];
@@ -298,4 +308,6 @@ Scale.rast.ratios
 pentatonic.ratios
 1.0.bilinrand
 1.0.gauss
-gauss(0.0, 1.0)
+		"pos: ".post;~gran1.set( \pos, ~samples_data[~sample_id][8].choose.postln);
+		~gran1.set( \rate, rrand(0.2, 0.8).postln);
+		~gran1.set( \rate, rrand(1.4, 1.7).postln);

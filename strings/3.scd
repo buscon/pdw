@@ -1,8 +1,10 @@
+/*
 Synth(\string, [\pan, -1]);
 ~string.set(\freq_dev,0.6);
 Synth(\string,[\pan, 1, \sustain, 3, \freq_dev, 10]);
 ~string = Synth(\string, [\pan, -1]);
 ~string2 = Synth(\string, [\pan, 1]);
+*/
 (
 ~string = Ndef(\string, {arg out=0, freq=211, freq2 = 0, pan=0, mx = 0, mx2 = 0,sustain=0.5, volume=0.5, volume2 = 1, sgate = 0, sensitive = 0, freq_dev = 0.5, freq_scale = 1, brFreq = 400, lpfF = 3000, decay = 0.01;
 	var pluck, period, string, impulse, trig, res_num = 12;
@@ -37,7 +39,7 @@ Synth(\string,[\pan, 1, \sustain, 3, \freq_dev, 10]);
 }).play;
 
 // more complexity, maybe BPF or BRF ?
-SynthDef(\stringS, {arg out=0, freq=211, freq2 = 0, pan=0, mx = 0, mx2 = 0,sustain=0.5, volume=0.5,sgate = 0, sensitive = 0, freq_dev = 1, freq_scale = 1, brFreq = 400;
+SynthDef(\stringS, {arg out=0, freq=211, freq2 = 0, pan=0, mx = 0, mx2 = 0,sustain=0.5, volume=0.5,sgate = 0, sensitive = 0, freq_dev = 1, sdecay =1, freq_scale = 1, brFreq = 400;
 	var pluck, period, string, impulse, trig, res_num = 6;
 
 	freq=freq + freq2;// + MouseY.kr(12,78).round(2) ;
@@ -57,7 +59,7 @@ SynthDef(\stringS, {arg out=0, freq=211, freq2 = 0, pan=0, mx = 0, mx2 = 0,susta
 
 	//string = CombL.ar(pluck, 0.1, period, {sustain.rand}*6);
 
-	string = Splay.ar(CombL.ar(pluck, 0.2, period, {sustain.rand}*1) );
+	string = Splay.ar(CombL.ar(pluck, 0.2, period, {sustain.rand}* sdecay) );
 	//freq.poll;
 	//string = BRF.ar(string, brFreq, 0.5);
 
@@ -67,15 +69,15 @@ SynthDef(\stringS, {arg out=0, freq=211, freq2 = 0, pan=0, mx = 0, mx2 = 0,susta
 //	string = GVerb.ar(string, 100, 1.85, 0.41, 0.19, 0.71, 0.35, 0.28 ) * 0.5;
 	string = Mix.new(string);
 
-	string = FreeVerb.ar(string, 0.5, 0.8)  * EnvGen.ar(Env.perc(0.02, 3), sgate, doneAction:2);
-	string = Pan2.ar(string, pan, 2);
+	string = FreeVerb.ar(string, 0.8, 0.8)  * EnvGen.ar(Env.perc(0.02, 3), sgate, doneAction:2);
+	string = Pan2.ar(string, pan, 3);
 	//DetectSilence.ar(string, doneAction:2);
 
 	Out.ar(out, string);
 }).add;
 )
 
-
+/*
 SynthDef(\stringSold, {arg out=0, freq=211, freq2 = 0, pan=0, mx = 0,sustain=0.5, amp=0.5,sgate = 0, sensitive = 1;
 	var pluck, period, string, impulse, trig, res_num = 6;
 
@@ -110,7 +112,7 @@ SynthDef(\stringSold, {arg out=0, freq=211, freq2 = 0, pan=0, mx = 0,sustain=0.5
 
 
 )
-/*
+
 -17.dbamp
 (
 var speed, speed2,  val, val2,  longval2, longval, meanval, peak, changePos = 0;

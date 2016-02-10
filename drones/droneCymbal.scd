@@ -1,18 +1,18 @@
 
 
 (
-~drC = Ndef(\droneCymbal, {arg lowPassFreq  =100, lowPassQ = 1, freq_scale = 0.7, volume = 0.5;
+~drC = Ndef(\droneCymbal, {arg lowPassFreq  =400, lowPassQ = 1, freq_scale = 0.7, volume = 0.5;
 	var lfo, num_freq, ratios;
 	num_freq = 50;//MouseY.kr(1,50);//50;
-	ratios = Scale.rast.ratios;
-	lfo =  LFNoise2.kr(5);
+	ratios = Scale.whole.ratios;
+	lfo =  LFNoise2.kr(1);
 	//lowPassFreq = MouseX.kr(100, 8000,1);lowPassQ = MouseX.kr(2, 1);
 
-	s = BPF.ar(Ringz.ar(PinkNoise.ar(0.1), {exprand(50, 15000) * ratios.choose}.dup(num_freq) *
+	s = BPF.ar(Ringz.ar(BrownNoise.ar(0.1), {exprand(50, 15000) * ratios.choose}.dup(num_freq) *
 		//Select.kr(MouseX.kr(0, 1).round(0.2) * r.size * 0.5, r).poll  *
 		freq_scale
 		//* lfo.range(0.9, 1.1)
-		,{rrand(0.1, 1)}.dup(num_freq), 0.25).mean, (lowPassFreq.lag(0.1) * lfo.range(0.1, 2) )
+		,{rrand(0.1, 1)}.dup(num_freq), 0.25).mean, (lowPassFreq * lfo.range(0.5, 1.5) )
 		, lowPassQ.reciprocal
 	) * 1/4 * volume;
 	//s = Array.fill(n, RLPF.ar(Ringz.ar(PinkNoise.ar(0.1), {rrand(300, 10000)} * Select.kr(MouseX.kr(0, 1) * r.size, r).poll *0.2 ,{rrand(0.5, 1.5)}, n.reciprocal/4), 1000)) * 1/16;
@@ -22,6 +22,8 @@
 
 )
 /*
+~drC.set(\lowPassFreq, 3000);
+
 ~drC.set(\volume, 1);
 FreqScope.new
 (

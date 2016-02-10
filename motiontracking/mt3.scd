@@ -11,7 +11,7 @@
 ("/Users/marcello/Music/Supercollider/PdW/ligeti/main.scd").load;
 (
 var  sensitive = 0, aS, pS, stS,
-data_sel, hyper_data_sel, which_data = 1,
+data_sel, hyper_data_sel, which_data = 4,
 which_osc = 'actN', port = 9000, now;
 t = Main.elapsedTime.asInt;
 now = (t.asInt)-0.1;
@@ -21,27 +21,23 @@ aS = Scale.bartok.ratios * 0.7;	// array of the pitches of the timpani
 pS = Pxrand(aS, inf);				// make the Pattern
 stS = pS.asStream;
 
-data_sel = { arg val, which, which_osc;
 
+
+OSCdef( \actN, { |msg|
+	var val = msg[1];
 	var res;
 	res = case
-		{ which == 0} {
+		{ which_data == 0} {
 
 	}
-	{ which == 1} {
+	{ which_data == 1} {
 			// trig Drones
-		var resu;
-
-		resu = case
-		{ which_osc == 'actN1'}
-		{
-			//val.postln;
 	Ndef(\trigDrones).set(\volume, val.linlin(0, 0.03, 0, 1.5));
 	Ndef(\trigDrones).set(\volume2, val.linlin(0.1, 1, 1, 1.5));
 	Ndef(\trigDrones).set(\speed, (val.linlin(0, 0.6, 2, 20) ));
 
 	Ndef(\trigDrones).set(\rate, (val.linlin(0.85, 1, 1, 1.25) ));
-	Ndef(\trigDrones).set(\lpfFreq, (val.linexp(0.2, 0.8, 1000, 4000).postln ));
+	Ndef(\trigDrones).set(\lpfFreq, (val.linexp(0.1, 0.8, 600, 4000) ));
 
 //	Ndef(\trigDrones).set(\sensitive, (val.linlin(0.01, 0.04, 0, 1) ));
 		t = Main.elapsedTime.asInt;
@@ -50,28 +46,17 @@ data_sel = { arg val, which, which_osc;
 			{
 
 				"octave: ".post;
-				//Ndef(\trigDrones).set(\octave, ([1, (5/4), 3/2].wchoose([0.4,0.3,0.3]) ).postln );
+				Ndef(\trigDrones).set(\octave, ([1, (5/4), 3/2].wchoose([0.4,0.3,0.3]) ).postln );
 				now = (t.asInt)+1;
 				"now: ".post;now.postln;
 				"time: ".post;t.postln;
 			"=======".postln
 
 		} );
-		}
-		{ which_osc == 'centerX1'}
-		{
-
-		};
-		resu;
 	}
-	{ which == 2 } {
+	{ which_data == 2 } {
 
 			// strings
-		var resu;
-
-		resu = case
-		{ which_osc == 'actN1'}
-		{
 		~string.set( \volume, val.linlin(0, 0.0001 , 0, 0.3));
 		~string.set( \volume2, val.linlin(0.4, 1 , 1, 2));
 
@@ -85,42 +70,21 @@ data_sel = { arg val, which, which_osc;
 		~string.set( \freq2, val.linexp(0.8, 1, 0, 20));
 		~string.set( \mx, val.linlin(0, 1, 0, 30));
 
-			if((sensitive == 0) && (val > 0.04), {   Synth(\stringS, [\amp, 0.1]);sensitive = 1;});
-		if((val < 0.04), { sensitive = 0; });
-
-		}
-		{ which_osc == 'centerX1'}
-		{
-			~string.set( \freq_scale, val.linlin(0.01, 0.99 , 0.8, 1.2).round(0.2));
-		};
-		resu;
-
 	}
-	{ which == 3 } {
-				var resu;
+	{ which_data == 3 } {
 /* todo:
 	- sensitive with tail, release sound
 
 		*/
-		resu = case
-		{ which_osc == 'actN1'}
-		{
+
 		~drC.set(\volume, val.linlin(0.05, 0.15, 0, 2));
 		//env = ControlSpec(100, 8000, 4); ~drC.set(\lowPassFreq, env.map(~expMa.linlin(0.1, touch_thres, 0, 1)).postln); env2 = ControlSpec(2, 1, 4); ~drC.set(\lowPassQ, env.map(~expMa.linlin(0.1, touch_thres, 0, 1)));
 		~drC.set(\lowPassFreq, val.linexp(0.1, 0.8, 100, 8000)); ~drC.set(\lowPassQ, val.linlin(0.1, 1, 2, 1));
-	}
-		{ which_osc == 'centerX1'}
-		{
-			~drC.set(\freq_scale, val.linlin(0.1, 0.9, 0.5, 1.5).round(0.1));
-		};
-		resu;
-	}
-	{ which == 4 } {
-						var resu;
 
-		resu = case
-		{ which_osc == 'actN1'}
-		{
+
+	}
+	{ which_data == 4 } {
+
 				~fw.set(\amp, val.linlin(0.05, 0.15, 0, 0.4));
 							~fw.set(\amp2, val.linlin(0.6, 1, 1, 1.6));
 
@@ -129,39 +93,23 @@ data_sel = { arg val, which, which_osc;
 			~fw.set(\scale_tones, val.linlin(0.3, 0.8, 1, 1.5));
 			~fw.set(\deviation, val.linlin(0.1, 0.7, 20, 200));
 	}
-		{ which_osc == 'centerX1'}
-		{
-~fw.set(\scale_val, Scale.rast.ratios.choose.linlin(1, 1.9, 0.2, 0.7));
-		}
-	}
-			{ which == 5 } {
-						var resu;
 
-		resu = case
-		{ which_osc == 'actN1'}
-			{
+			{ which_data == 5 } {
+
 				Ndef(\complexB).set(\volume, val.linlin(0, 0.05, 0, 0.5));
 				Ndef(\complexB).set(\volume2, val.linlin(0.5, 1, 1, 2));
 				Ndef(\complexB).set(\lpfFreq, val.linlin(0.05, 0.7, 50, 20000));
 				Ndef(\complexB).set(\hpfFreq, val.linexp(0.8, 1, 10, 5000));
 
-						Ndef(\complexB).set(\speed, val.linlin(0, 0.2, 2, 1.5));
+				Ndef(\complexB).set(\speed, val.linlin(0, 0.2, 2, 1.5));
 			Ndef(\complexB).set(\speed2, val.linlin(0.85, 1, 0, -1.45));
+	}
+			{ which_data == 6 } {
 
-			};
-		resu;
-
+						~glitch_drones.set(\volume, val.linlin(0, 0.05, 0, 0.5));
+				~glitch_drones.set(\volume2, val.linlin(0.5, 1, 1, 2));
 	};
 	res;
-
-};
-
-
-
-OSCdef( \actN, { |msg|
-	var val = msg[1];
-	data_sel.value(val, which_data, 'actN1');
-
 	}, "/activityNormal1",
 nil, port);
 
@@ -172,11 +120,28 @@ OSCdef( \centerX, { |msg|
 
 	}
 	{ which_data == 1} {
-					var list = Scale.whole.ratios;
-						val.postln;
+					var list = Scale.bartok.ratios;
 
-			Ndef(\trigDrones).set(\select, list[(val.linlin(0.1, 0.9, 1, 6).round(1); )];);
+			Ndef(\trigDrones).set(\select, list[(val.linlin(0.1, 0.9, 1, list.size).round(1); )];);
 	}
+		{ which_data == 2} {
+				~string.set( \freq_scale, val.linlin(0.01, 0.99 , 0.8, 1.2).round(0.2));
+	}
+		{ which_data == 3} {
+					~drC.set(\freq_scale, val.linlin(0.1, 0.9, 0.5, 1.5).round(0.1));
+	}
+				{ which_data == 4} {
+
+~fw.set(\scale_val, Scale.rast.ratios.choose.linlin(1, 1.9, 0.2, 0.7));
+		}
+				{ which_data == 5} {
+	}
+				{ which_data == 6} {
+
+			~glitch_drones.set(\modAmp1, val.linlin(0.1, 1, 1, 2));
+
+	};
+
 	}, "/centerX1",
 nil, port);
 OSCdef( \height, { |msg|
@@ -190,12 +155,20 @@ nil, port);
 
 OSCdef( \sensitive, { |msg|
 	var res, val = msg[1];
+
 	res = case
 		{ which_data == 0} {
 
 	}
 	{ which_data == 1} {
 		Synth(\trigDrones, [\volume, 1.5, \sensitive, 1, \rate, Scale.whole.ratios.choose, \lpfFreq, rrand(1000, 4000), \octave, 1.5 ]);
+
+	}
+		{ which_data == 2} {
+			   Synth(\stringS, [\amp, 0.1]);sensitive = 1;
+
+	}
+	{ which_data == 3} {
 
 	};
 	res;
