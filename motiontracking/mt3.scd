@@ -3,15 +3,20 @@
 - refine the sounds:
 - glitch_sound!
 */
-
+FreqScope.new
 ("/Users/marcello/Music/Supercollider/PdW/drones/triggering_drones_minibees.scd").load;
 ("/Users/marcello/Music/Supercollider/PdW/strings/3.scd").load;
 
 ("/Users/marcello/Music/Supercollider/PdW/drones/droneCymbal.scd").load;
 ("/Users/marcello/Music/Supercollider/PdW/ligeti/main.scd").load;
+("/Users/marcello/Music/Supercollider/pdw/glitch/glitch_drone.scd").load;
 (
-var  sensitive = 0, aS, pS, stS,
-data_sel, hyper_data_sel, which_data = 4,
+m = NetAddr("127.0.0.1", 9000);
+m.sendMsg("/centerX1", 0.7);
+)
+(
+var  sensitive = 0, aS, pS, stS, debug = 1,
+data_sel, hyper_data_sel, which_data = 6,
 which_osc = 'actN', port = 9000, now;
 t = Main.elapsedTime.asInt;
 now = (t.asInt)-0.1;
@@ -23,9 +28,10 @@ stS = pS.asStream;
 
 
 
-OSCdef( \actN, { |msg|
+a = OSCdef( \actN, { |msg|
 	var val = msg[1];
 	var res;
+	if(debug == 1, { (msg[0]++": "++val).postln; });
 	res = case
 		{ which_data == 0} {
 
@@ -106,21 +112,28 @@ OSCdef( \actN, { |msg|
 	}
 			{ which_data == 6 } {
 
-						~glitch_drones.set(\volume, val.linlin(0, 0.05, 0, 0.5));
-				~glitch_drones.set(\volume2, val.linlin(0.5, 1, 1, 2));
+			~glitch_drones.set(\volume, val.linlin(0, 0.05, 0, 0.01));
+			~glitch_drones.set(\volume2, val.linlin(0.5, 1, 1, 2));
+
+			~glitch_drones.set(\modAmp1, val.linlin(0.1, 1, 1, 10));
+
+			~glitch_drones.set(\modF, val.linlin(0.1, 1, 0, 1));
+			~glitch_drones.set(\modN, val.linlin(0.1, 1, 0, 1));
 	};
 	res;
 	}, "/activityNormal1",
-nil, port);
+nil, port).permanent_(true);
 
 OSCdef( \centerX, { |msg|
 	var res, val = msg[1];
+	if(debug == 1, { (msg[0]++": "++val).postln; });
+
 	res = case
 		{ which_data == 0} {
 
 	}
 	{ which_data == 1} {
-					var list = Scale.bartok.ratios;
+			var list = Scale.bartok.ratios;
 
 			Ndef(\trigDrones).set(\select, list[(val.linlin(0.1, 0.9, 1, list.size).round(1); )];);
 	}
@@ -137,24 +150,31 @@ OSCdef( \centerX, { |msg|
 				{ which_data == 5} {
 	}
 				{ which_data == 6} {
+			//~glitch_drones.set(\modAmp1, val.linlin(0.1, 1, 1, 50));
 
-			~glitch_drones.set(\modAmp1, val.linlin(0.1, 1, 1, 2));
+			~glitch_drones.set(\modAmp2, val.linlin(0.1, 1, 1, 50));
+			~glitch_drones.set(\modAmp3, val.linlin(0.1, 1, 1, 40));
+			~glitch_drones.set(\gpos, val.linlin(0.1, 1, 0.1, 0.9));
+			~glitch_drones.set(\modN, val.linlin(0.1, 1, 0.1, 0.9));
 
 	};
 
 	}, "/centerX1",
-nil, port);
+	nil, port).permanent_(true);
 OSCdef( \height, { |msg|
-
 	var val = msg[1];
+		if(debug == 1, { (msg[0]++": "++val).postln; });
+
 			Ndef(\trigDrones).set(\select, (val.linlin(0.1, 0.9, 0, 1).round(0.1) ));
 		}, "/height",
-nil, port);
+nil, port).permanent_(true);
 
 
 
 OSCdef( \sensitive, { |msg|
 	var res, val = msg[1];
+		if(debug == 1, { (msg[0]++": "++val).postln; });
+
 
 	res = case
 		{ which_data == 0} {
@@ -173,7 +193,9 @@ OSCdef( \sensitive, { |msg|
 	};
 	res;
 	}, "/activitySensitive1",
-nil, port);
+nil, port).permanent_(true);
+
+//a.permanent_(true);
 
 )
 Ndef(\trigDrones).set(\decaytime, 0.5);

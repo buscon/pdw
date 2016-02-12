@@ -3,7 +3,7 @@
     // strummable guitar
 
     // use mouse to strum strings
-Ndef(\trigDrones, {| out = 0, speed = 0, select = 0, decaytime = 0.5, volume = 0, volume2 = 1, sensitive = 0, rate = 1, octave = 0.5, lpfFreq = 4000 |
+~trigDrones = Ndef(\trigDrones, {| out = 0, speed = 0, select = 0, decaytime = 0.5, volume = 0, volume2 = 1, sensitive = 0, rate = 1, octave = 0.5, lpfFreq = 4000, decay_scale =1 |
 
 	var pitch, mousex, ausgang, size, pluck, period, string,trigger = 0, triggerNote, timer;
 
@@ -11,7 +11,7 @@ Ndef(\trigDrones, {| out = 0, speed = 0, select = 0, decaytime = 0.5, volume = 0
 	pitch = [1,9/8,6/5,4/3,3/2,8/5,7/4] * octave * 0.5;// * 52;
 	mousex = select.lag(0.1);//
 
-//	mousex = MouseX.kr; speed = MouseY.kr(0, 4);
+	//mousex = MouseX.kr;speed = MouseY.kr(0, 10);
 size = 100;
 
 	trigger = Mix.fill(size, { arg i;
@@ -28,7 +28,7 @@ size = 100;
 
 	});
 	//trigger = triggerNote;// +  HPZ1.kr(speed);
-	pluck = PinkNoise.ar(Decay.kr((trigger + Impulse.kr(speed, 0, 10) + Trig.kr(sensitive, 0.05)), 0.05)) * volume * volume2;
+	pluck = PinkNoise.ar(Decay.kr((trigger + Impulse.kr(speed, 0, 10) + Trig.kr(sensitive, 0.05)), 0.05 * decay_scale)) * volume * volume2;
 
 	period = Select.kr(mousex * pitch.size, pitch);
 
@@ -37,11 +37,11 @@ size = 100;
 	//ausgang = Streson.ar(ausgang);
 
 	//ausgang = CombL.ar(string, period, period, 4);
-	//ausgang = LPF.ar(ausgang, 12000);
+	//ausgang = RLPF.ar(ausgang, 4000);
 
 	ausgang = LeakDC.ar(ausgang) ;
-//	ausgang = GVerb.ar(ausgang, 200, 3);
-	ausgang = AdCVerb.ar( ausgang, 2 ) ;
+	ausgang = GVerb.ar(ausgang, 200, 3);
+//	ausgang = AdCVerb.ar( ausgang, 2 ) ;
 	Out.ar(out,ausgang);
 
 });

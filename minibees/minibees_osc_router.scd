@@ -13,7 +13,7 @@
 Ndef(\ibeat).stop
 Ndef(\ibeat).set(\volume, 0);
 (
-var speedx1, speedy1, speedz1, speedx2, speedy2, speedz2, xyz1, xyz2, speedAll1, speedAll2,  longval1, longval2,  long, changePos = 0, oscar, stlen= 5, ltlen = 50, debug = 0, oscar_there = 1, val = 0, data_sel, hyper_data_sel, which_data = 3,
+var speedx1, speedy1, speedz1, speedx2, speedy2, speedz2, xyz1, xyz2, speedAll1, speedAll2,  longval1, longval2,  long, changePos = 0, oscar, stlen= 5, ltlen = 50, debug = 1, oscar_there = 1, val = 0, data_sel, hyper_data_sel, which_data = 0,
 sensitive = 0,
 setup = 2, // setup
 x1, y1, z1, x2, y2, z2;
@@ -41,8 +41,6 @@ data_sel = { arg val, which;
 		Ndef(\trigDrones).set(\lpfFreq, (val.linlin(0.2, 0.8, 3000, 8000) ));
 
 		Ndef(\trigDrones).set(\sensitive, (~val1.linlin(0.02, 0.04, 0, 1) ));
-
-
 	}
 	{ which == 3 } {
 		//granulator
@@ -183,6 +181,7 @@ speedy1.ltlen_( ltlen  );
 speedz1.ltlen_( ltlen  );
 ~t = Main.elapsedTime.asInt;
 ~now = (~t.asInt)-0.1;
+
 OSCdef( \minibeeRouter, { |msg|
 	var absValue, absValue2;
 
@@ -215,7 +214,8 @@ OSCdef( \minibeeRouter, { |msg|
 	("longval1: "++longval1).postln;
 
 	});
-			if(oscar_there > 0, {
+
+		if(oscar_there > 0, {
 		oscar.sendMsg("/x1", speedx1.shortStdDev);
 		oscar.sendMsg("/y1", speedy1.shortStdDev);
 		oscar.sendMsg("/z1", speedz1.shortStdDev);
@@ -225,8 +225,9 @@ OSCdef( \minibeeRouter, { |msg|
 		oscar.sendMsg("/lastPeaky1", speedy1.lastPeak[0]);
 		oscar.sendMsg("/lastPeakz1", speedz1.lastPeak[0];);
 		});
-		data_sel.value(~val1, which_data );
 
+		data_sel.value(~val1, which_data );
+/*
 
 		~t = Main.elapsedTime.asInt;
 
@@ -240,8 +241,9 @@ OSCdef( \minibeeRouter, { |msg|
 
 		} );
 
-
+*/
 	});
+
 		if ( msg[1] == 2 ,{
 		x2 = msg[2];
 		y2 = msg[3];
@@ -280,6 +282,7 @@ OSCdef( \minibeeRouter, { |msg|
 		*/
 
 	});
+
 
 }, "/minibee/data" );
 
