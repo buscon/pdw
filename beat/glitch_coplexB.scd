@@ -5,11 +5,11 @@ wave = Wavetable.chebyFill(512, [1]);
 buf = Buffer.alloc(s, 1024, 1);
 buf.sendCollection(wave.asWavetableNoWrap);
 
-Ndef(\complexB, {arg distortion = 0, volume = 0, volume2 = 1,speed = 1.5 , speed2 = 0, hpfFreq = 10, lpfFreq = 20000, which = 0, filter = 0, decay_bass = 1;
+Ndef(\complexB, {arg volume = 0, volume2 = 1,speed = 1.5 , speed2 = 0, hpfFreq = 10, lpfFreq = 20000, which = 0, filter = 0, decay_bass = 1, distortion = 0;
 
 
 var ctrigs, ctrigsB, freq, freqW, freqB, clicks, output, waves, bass;
-//	decay_bass = MouseX.kr(0.01, 3).poll;which = MouseY.kr();filter = MouseX.kr;
+	//decay_bass = MouseX.kr(0.01, 3).poll;which = MouseY.kr();filter = MouseX.kr;
 ctrigs =
 {
 TDuty.ar
@@ -57,11 +57,12 @@ BPF.ar
 //output = waves;
 //	output = waves * 0.5;
 	output = (bass + waves + clicks) * 0.5;
-	//distortion = distortion.lag(0.2);
+	//output = (output * MouseX.kr(0.1,80,1)).wrap2;
 	//output = SelectX.ar(distortion, [output, Smoot.ar(output, distortion.linlin(0, 1, 0, 0.9), distortion.linlin(0, 1, 0, 0.9)) * 0.05]);
 	output = RLPF.ar(output, lpfFreq, 0.7);
 	output = RHPF.ar(output, hpfFreq.lag(0.1), 0.7);
 	//output = SelectX.ar(which, [output, Resonz.ar(output, filter.linexp(0, 1, 100, 6000), 0.2, filter.linexp(0, 1, 3.5, 9) )]);
+	//distortion = MouseX.kr();
 	output = MidEQ.ar(output, 2000, 0.7, 6) * volume * volume2;
 	output = GVerb.ar(output, 100, 1.24, 0.1, 0.95, 15, 0.dbamp, -9.dbamp, -11.dbamp);
 	//output = Limiter.ar(output * 0.5);

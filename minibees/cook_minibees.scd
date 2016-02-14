@@ -11,7 +11,9 @@
 	speedxyz.ltlen_( ltlen );
 
 
-			xyz = (pow(msg[3],2)+pow(msg[4],2)+pow(msg[5],2)).sqrt;
+			//xyz = (pow(msg[3],2)+pow(msg[4],2)+pow(msg[5],2)).sqrt;
+			xyz = (pow(msg[3],2)+pow(msg[4],2)).sqrt;
+
 			speedxyz.addValue(xyz);
 			val = speedxyz.shortStdDev.explin(0.0003, 0.2, 0, 1);//.explin(0.0003, 0.2, 0, 1);
 			longval = speedxyz.longStdDev.linlin(0.001, 0.1, 0.0, 1);

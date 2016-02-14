@@ -4,14 +4,24 @@ todo:
 - fix the sensitives!
 */
 (
-~data_sel = { arg val, longval, which;
-	var res, sensitive = 0, time, now;
+~data_sel = { arg val, longval, which, sensitive;
+	var res,  time, now;
 
 	time = Main.elapsedTime.asInt;
 	now = (time.asInt)-0.1;
 
 	res = case
 		{ which == 0} {
+		~ibeat.set(\volume, 0);
+		~trigDrones.set(\volume, 0);
+		~gran1.set( \volume, 0);
+		~gran2.set( \volume, 0);
+
+		~fw.set(\volume, 0);
+		Ndef(\complexB).set(\volume, 0);
+		~pad.set(\volume, 0);
+		~stranga.set(\volume, 0);
+
 
 	}
 	{ which == 1} {
@@ -41,36 +51,111 @@ todo:
 		~trigDrones.set(\lpfFreq, (val.linlin(0.2, 0.8, 3000, 8000) ));
 
 		~trigDrones.set(\sensitive, (val.linlin(0.02, 0.04, 0, 1) ));
+
 	}
 	{ which == 3 } {
+			var sample_id;
+
 		//granulator
-		//~gran1.set( \frate, val.linlin(0.7, 1.0, 1, 1.5));
-		//~gran1.set( \dur, val.linlin(0.8, 1.0, 0.2, 2));
-		//~gran1 = Synth(\gran);
-
-		~sample_id = 2;
-
-		~gran1.set(\bufNum, ~b[~sample_id].bufnum, \amtRnd, 0, \amFreq, 1000, \master_vol, 2, \dur, 0.25, \pos, 1.0.rand, \volume,1);
-		//~gran2.set(\bufNum, ~b[1].bufnum, \amVol, 0, \amFreq, 1000, \master_vol, 0.5, \dur, 0.25, \pos, 1.0.rand, \volume,1);
 
 
-		~gran1.set(\bufNum, ~b[~sample_id].bufnum);
+		sample_id = 1;
+
+		~gran1.set(\bufNum, ~b[sample_id].bufnum);
+		~gran1.set(\pan, -1);
 
 
-		~gran1.set( \volume, val.linlin(0.001, 0.1 , 0, ~samples_data[~sample_id][2]));
-		~gran1.set( \volume2, val.linlin(0.1, 0.7, 1, ~samples_data[~sample_id][3]));
-		~gran1.set( \volume3, val.linlin(0.7, 1, 1, ~samples_data[~sample_id][4]));
 
-		~gran1.set( \trigRate1, val.linexp(0.01, 0.5, 2, ~samples_data[~sample_id][5])); // mean or val?
-		~gran1.set( \trigRate2, val.linlin(0.5, 1, 0, ~samples_data[~sample_id][6]));
+		~gran1.set( \volume, val.linlin(0, 0.1 , 0, ~samples_data[sample_id][2]));
+		~gran1.set( \volume2, val.linlin(0.1, 0.7, 1, ~samples_data[sample_id][3]));
+		~gran1.set( \volume3, val.linlin(0.6, 1, 1, ~samples_data[sample_id][4]));
 
-		~gran1.set( \amtRnd, val.linlin(0.5, 1, 0.001, ~samples_data[~sample_id][7]));
+		~gran1.set( \trigRate1, val.linexp(0.1, 0.5, 2, ~samples_data[sample_id][5])); // mean or val?
+		~gran1.set( \trigRate2, val.linlin(0.5, 1, 0, ~samples_data[sample_id][6]));
+		~gran1.set( \dur, val.linlin(0.4, 1, 0.3, 1));
+
+			~gran1.set( \pv_amt, val.linlin(0.5, 0.9, 0, 0.5));
+				~gran1.set( \stretch_bins, val.linexp(0.6, 1, 0.5, 4));
+
+		~gran1.set( \amtRnd, val.linlin(0.3, 1, 0.002, ~samples_data[sample_id][7]));
+
+		if((val > 0.8) && (~changed3 !=0), {
+			~ratef = (Scale.bartok.ratios.choose * 0.7);
+			~gran1.set(\pos, ~samples_data[sample_id][8].choose.postln);
+			~gran1.set(\rate, ~ratef);
+
+		});
+		if((~sensitive3 == 0) && (val > 0.04), {
+			~sensitive3 = 1;
+			Synth(\granS, [\bufNum, ~b[sample_id].bufnum, \volume, rrand(0.5, 1.5), \rate, ~ratef.postln, \dur, rrand(0.1, 0.2), \pan, -1, \pos, ~samples_data[sample_id][8].choose, \cutoff, ~ratef.linlin(0.7, 1.24, 3000, 500).postln]);
+
+
+
+		});
+		if((val < 0.04), { ~sensitive3 = 0;			 });
+
 	}
 	{ which == 4 } {
+			var sample_id;
+
+		//granulator
+
+
+		sample_id = 2;
+
+		~gran2.set(\bufNum, ~b[sample_id].bufnum);
+		~gran2.set(\pan, 1);
+
+
+
+		~gran2.set( \volume, val.linlin(0, 0.1 , 0, ~samples_data[sample_id][2]));
+		~gran2.set( \volume2, val.linlin(0.1, 0.7, 1, ~samples_data[sample_id][3]));
+		~gran2.set( \volume3, val.linlin(0.6, 1, 1, ~samples_data[sample_id][4]));
+
+		~gran2.set( \trigRate1, val.linexp(0.1, 0.5, 2, ~samples_data[sample_id][5])); // mean or val?
+		~gran2.set( \trigRate2, val.linlin(0.5, 1, 0, ~samples_data[sample_id][6]));
+		~gran2.set( \dur, val.linlin(0.4, 1, 0.4, 1));
+
+			~gran2.set( \pv_amt, val.linlin(0.5, 0.9, 0, 0.5));
+				~gran2.set( \stretch_bins, val.linexp(0.6, 1, 0.5, 4));
+
+		~gran2.set( \amtRnd, val.linlin(0.2, 1, 0.002, ~samples_data[sample_id][7]));
+
+		if((val > 0.95) && (~changed4 !=0), {
+			~ratef = (Scale.bartok.ratios.choose * 0.7);
+			~gran2.set(\pos, ~samples_data[sample_id][8].choose.postln);
+			~gran2.set(\rate, ~ratef);
+
+		});
+		if((~sensitive4 == 0) && (val > 0.04), {
+			~sensitive4 = 1;
+			Synth(\granS, [\bufNum, ~b[sample_id].bufnum, \volume, rrand(0.5, 1.5), \rate, ~ratef, \dur, rrand(0.1, 0.2), \pan, 1, \pos, ~samples_data[sample_id][8].choose, \cutoff, ~ratef.linlin(0.7, 1.24, 3000, 500)]);
+
+
+
+		});
+		if((val < 0.04), { ~sensitive4 = 0;			 });
+
+	}
+	{ which == 5 } {
 			// strings
 
+		~fw.set(\volume, val.linlin(0, 0.1, 0, 0.5));
+		~fw.set(\deviation, val.linlin(0.2, 1, 5, 150));
+		~fw.set(\step, val.linlin(0.3, 1, 0.01, 10));
+		~fw.set(\volume2, val.linlin(0.3, 1, 1, 2.5));
+		~fw.set(\lowPass_scale, val.linlin(0.3, 1, 1, 2));
 
-		~string.set( \volume, val.linlin(0, 0.0001 , 0, 0.3).postln);
+		if(val > 0.9, {~fw.set(\scale_val, rrand(0.5, 1.5).postln;)});
+		if((~sensitive5 == 0) && (val > 0.04), {
+			~sensitive5 = 1;
+			Synth(\freq_wanderS, [\volume, rrand(0.3, 0.9), \lo, rrand(50, 80), \hi, rrand(70, 110), \deviation, exprand(90, 100), \scale_val, rrand(0.5, 1.5)]);
+		});
+		if((val < 0.04), { ~sensitive5 = 0;			 });
+			//deviation = MouseX.kr(1, 150);step = MouseX.kr(0.01, 10);
+
+		/*
+		~string.set( \volume, val.linlin(0, 0.0001 , 0, 0.3));
 		~string.set( \volume2, val.linlin(0.4, 1 , 1, 2));
 
 		~string.set( \sustain, val.linlin(0, 1 , 5, 0.1));
@@ -82,7 +167,7 @@ todo:
 		~string.set(\sdecay, (val.linexp(0.5, 1, 1, 0.1) ));
 		~string.set( \freq2, val.linexp(0.8, 1, 0, 50));
 		~string.set( \mx, val.linlin(0, 0.8, 0, 20));
-
+*/
 
 
 
@@ -93,7 +178,7 @@ todo:
 		//~string.set(\sensitive, val.linlin(0.02, 0.04, 0, 1 ));
 	}
 
-		{ which == 5 } {
+		{ which == 6 } {
 			Ndef(\complexB).set(\volume, val.linlin(0, 0.1, 0, 0.5));
 
 			Ndef(\complexB).set(\volume2, val.linlin(0.5, 1, 1, 2));
@@ -107,15 +192,39 @@ todo:
 
 			Ndef(\complexB).set(\speed2, val.linlin(0.7, 0.9, 0, -1.45));
 	}
-	{ which == 6 } {
+	{ which == 7 } {
 		//val.postln;
-		~pad.set(\volume, val.linlin(0, 0.2, 0.000001, 0.25));
+		~pad.set(\volume, val.linlin(0, 0.2, 0.000001, 0.45));
 			//filter_mod = MouseX.kr(0.1, 4.5, 1); rq_mod = MouseY.kr(0.1, 2.0);
-		~pad.set(\volume2, val.linexp(0.2, 1, 1, 1.25));
+		~pad.set(\volume2, val.linexp(0.2, 1, 1, 2));
 
-		~pad.set(\filter_mod, val.linexp(0.2, 1, 0.1, 3.5).postln);
+		~pad.set(\filter_mod, val.linexp(0.2, 1, 0.1, 3.5));
 		~pad.set(\rq_mod, val.linlin(0.2, 0.7, 0.1, 0.3));
 
+
+			}
+	{ which == 8 } {
+
+		~stranga.set(\volume, val.linlin(0, 0.1, 0, 1));
+		~stranga.set(\volume2, val.linexp(0.1, 1, 1, 6));
+
+		~stranga.set(\speed, val.linlin(0, 0.8, 0, 5));
+		~stranga.set(\pitch_dev, val.linlin(0.5, 1, 0.1, 2));
+		~stranga.set(\decay_time, val.linlin(0.1, 1, 6, 1));
+		~stranga.set(\pitch_fine, val.linlin(0.25, 1, 0.25, 1));
+		if(val > 0.9, {~stranga.set(\pitch, rrand(0.2, 1);)});
+		if((~sensitive8 == 0) && (val > 0.06), {
+			~sensitive8 = 1;
+
+			Synth(\strangaS, [\volume, rrand(0.1, 0.35), \pitch, rrand(0.6, 1), \pitch_fine, rrand(0.3, 1), \pitch_dev, rrand(0.3, 0.7), \decay_time, rrand(1.0, 7.0), \roomsize, rrand(80, 150),\revtime , rrand(2.0,6.0) ]);
+		});
+		if((val < 0.06), { ~sensitive8 = 0;			 });
+		//sensitive.postln;
+
+			//pitch = MouseY.kr;
+	//speed = MouseX.kr(0, 10);
+	//decay_time = MouseY.kr(6, 1);
+	//pitch_dev = GrayNoise.kr(0.01).range(0.001, 0.009).poll;
 };
 	res;
 
