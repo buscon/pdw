@@ -12,6 +12,7 @@ todo:
 
 	res = case
 		{ which == 0} {
+		/*
 		~ibeat.set(\volume, 0);
 		~trigDrones.set(\volume, 0);
 		~gran1.set( \volume, 0);
@@ -21,7 +22,7 @@ todo:
 		Ndef(\complexB).set(\volume, 0);
 		~pad.set(\volume, 0);
 		~stranga.set(\volume, 0);
-
+*/
 
 	}
 	{ which == 1} {
@@ -29,18 +30,20 @@ todo:
 
 		~ibeat.set(\volume, val.linlin(0, 0.02, 0, 0.5));
 
-		~ibeat.set(\speed, ((val + val + longval)/3).linlin(0, 1, 0, 4));
+		~ibeat.set(\speed, ((val + val + longval)/3).linlin(0, 0.2, 0, 1));
+		~ibeat.set(\speed2, ((val + val + longval)/3).linlin(0.3, 1, 0, 3));
 
-		~ibeat.set(\scale_freq, val.linlin(0.6, 1, 1, 3));
+		~ibeat.set(\scale_freq, val.linlin(0.7, 1, 1, 3));
 
 		~ibeat.set(\which, val.linlin(0.6, 1, 0, 0.5));
 		~ibeat.set(\pitch, val.linlin(0.4, 0.8, 0, 1));
 		~ibeat.set(\pitchDispertion, val.linlin(0.5, 0.8, 0, 0.2));
 	~ibeat.set(\timeDispertion, val.linlin(0.6, 1, 0, 0.2));
 
+
 		if( (val > 0.99) && (now < time),
 			{
-				Synth(\ibeat, [\scale_freq, exprand(0.2, 2.0), \which, 0.5, \pitchRatio, 1.0.rand, \pitchDispertion, 3.0.rand, \timeDispertion, 3.0.rand, \volume, 1]);
+				//Synth(\ibeat, [\scale_freq, exprand(0.2, 2.0), \which, 0.5, \pitchRatio, 1.0.rand, \pitchDispertion, 3.0.rand, \timeDispertion, 3.0.rand, \volume, 1]);
 				} );
 	}
 	{ which == 2 } {
@@ -59,12 +62,10 @@ todo:
 		//granulator
 
 
-		sample_id = 1;
+		sample_id = 2;
 
 		~gran1.set(\bufNum, ~b[sample_id].bufnum);
 		~gran1.set(\pan, -1);
-
-
 
 		~gran1.set( \volume, val.linlin(0, 0.1 , 0, ~samples_data[sample_id][2]));
 		~gran1.set( \volume2, val.linlin(0.1, 0.7, 1, ~samples_data[sample_id][3]));
@@ -140,16 +141,23 @@ todo:
 	{ which == 5 } {
 			// strings
 
-		~fw.set(\volume, val.linlin(0, 0.1, 0, 0.5));
-		~fw.set(\deviation, val.linlin(0.2, 1, 5, 150));
+		~fw.set(\volume,
+			val.linlin(0, 0.1, 0, 0.5)
+			//0
+		);
+		~fw.set(\deviation, val.linlin(0.4, 0.8, 5, 150));
 		~fw.set(\step, val.linlin(0.3, 1, 0.01, 10));
-		~fw.set(\volume2, val.linlin(0.3, 1, 1, 2.5));
-		~fw.set(\lowPass_scale, val.linlin(0.3, 1, 1, 2));
+		~fw.set(\volume2, val.linlin(0.3, 0.8, 1, 2));
+		~fw.set(\lowPass_scale, val.linlin(0.3, 0.8, 1, 2));
 
-		if(val > 0.9, {~fw.set(\scale_val, rrand(0.5, 1.5).postln;)});
+		if(val > 0.9, {
+			//~fw.set(\scale_val, rrand(0.5, 1.5).postln;);
+			Synth(\freq_wanderS, [\volume, rrand(1, 2), \lo, rrand(50, 80), \hi, rrand(70, 110), \deviation, exprand(90, 100), \scale_val, rrand(0.5, 1.5), \pan, 1]);
+
+		});
 		if((~sensitive5 == 0) && (val > 0.04), {
 			~sensitive5 = 1;
-			Synth(\freq_wanderS, [\volume, rrand(0.3, 0.9), \lo, rrand(50, 80), \hi, rrand(70, 110), \deviation, exprand(90, 100), \scale_val, rrand(0.5, 1.5)]);
+			Synth(\freq_wanderS, [\volume, rrand(0.5, 0.9), \lo, rrand(40, 70), \hi, rrand(70, 100), \deviation, exprand(50, 100), \scale_val, rrand(0.5, 1.5), \pan, 1]);
 		});
 		if((val < 0.04), { ~sensitive5 = 0;			 });
 			//deviation = MouseX.kr(1, 150);step = MouseX.kr(0.01, 10);
@@ -179,7 +187,8 @@ todo:
 	}
 
 		{ which == 6 } {
-			Ndef(\complexB).set(\volume, val.linlin(0, 0.1, 0, 0.5));
+		val = val.linlin(0, 0.8, 0, 1);
+			Ndef(\complexB).set(\volume, val.linlin(0.05, 0.1, 0, 0.5));
 
 			Ndef(\complexB).set(\volume2, val.linlin(0.5, 1, 1, 2));
 			Ndef(\complexB).set(\lpfFreq, val.linexp(0.1, 0.6, 50, 20000));
@@ -188,18 +197,18 @@ todo:
 
 
 
-			Ndef(\complexB).set(\speed, val.linlin(0, 0.2, 2, 1.5));
+			Ndef(\complexB).set(\speed, val.linlin(0, 0.2, 3, 1.5));
 
 			Ndef(\complexB).set(\speed2, val.linlin(0.7, 0.9, 0, -1.45));
 	}
 	{ which == 7 } {
 		//val.postln;
-		~pad.set(\volume, val.linlin(0, 0.2, 0.000001, 0.45));
+		~pad.set(\volume, val.linlin(0, 0.2, 0.000001, 0.3));
 			//filter_mod = MouseX.kr(0.1, 4.5, 1); rq_mod = MouseY.kr(0.1, 2.0);
-		~pad.set(\volume2, val.linexp(0.2, 1, 1, 2));
+		~pad.set(\volume2, val.linexp(0.2, 1, 1, 2.5));
 
-		~pad.set(\filter_mod, val.linexp(0.2, 1, 0.1, 3.5));
-		~pad.set(\rq_mod, val.linlin(0.2, 0.7, 0.1, 0.3));
+		~pad.set(\filter_mod, val.linlin(0.2, 1, 0.1, 4.5));
+		~pad.set(\rq_mod, val.linlin(0.2, 0.7, 0.15, 0.3));
 
 
 			}
@@ -212,7 +221,12 @@ todo:
 		~stranga.set(\pitch_dev, val.linlin(0.5, 1, 0.1, 2));
 		~stranga.set(\decay_time, val.linlin(0.1, 1, 6, 1));
 		~stranga.set(\pitch_fine, val.linlin(0.25, 1, 0.25, 1));
-		if(val > 0.9, {~stranga.set(\pitch, rrand(0.2, 1);)});
+		if(val > 0.9, {~stranga.set(\pitch, rrand(0.2, 1);) });
+		if(val > 0.95, {
+					Synth(\strangaS, [\volume, rrand(0.7, 1.25), \pitch, rrand(0.6, 1), \pitch_fine, rrand(0.3, 1), \pitch_dev, rrand(0.5, 1), \decay_time, rrand(1.0, 7.0), \roomsize, rrand(80, 150),\revtime , rrand(2.0,6.0) ]);
+
+		});
+
 		if((~sensitive8 == 0) && (val > 0.06), {
 			~sensitive8 = 1;
 
@@ -225,6 +239,21 @@ todo:
 	//speed = MouseX.kr(0, 10);
 	//decay_time = MouseY.kr(6, 1);
 	//pitch_dev = GrayNoise.kr(0.01).range(0.001, 0.009).poll;
+
+			}
+	{ which == 9 } {
+
+		~drC.set(\volume, val.linlin(0.05, 0.15, 0, 2));
+
+		~drC.set(\lowPassFreq, val.linexp(0.1, 0.8, 100, 8000));
+		~drC.set(\lowPassQ, val.linlin(0.1, 1, 2, 1));
+
+		if((~sensitive9 == 0) && (val > 0.06), {
+			~sensitive9 = 1;
+
+			Synth(\droneCymbal, [ \lowPassFreq , rrand(100, 8000).postln, \lowPassQ, rrand(1,2).postln, \freq_scale, rrand(0.5, 1.2), \volume, rrand(0.2, 0.5), \pan, -1]);		});
+		if((val < 0.06), { ~sensitive9 = 0;			 });
+
 };
 	res;
 

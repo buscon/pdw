@@ -3,9 +3,29 @@
 /*
 - couple of sounds:
 - \trigDrones with Oscar organic pdw1.wav
+
+- 7, 8:
+*pan the sounds!
+*make them more different
+
 */
+
+// 7,8
+
+Synth(\droneCymbal, [ \lowPassFreq , rrand(100, 8000).postln, \lowPassQ rrand(1,2).postln, \freq_scale = rrand(0.5, 1.2), \volume rrand(0.2, 0.5), \pan, -1]);
+
+~pad.set(\scale_freq, (Scale.bartok.ratios.choose * 0.5).postln);
+~stranga.set(\pitch, (Scale.bartok.ratios.choose * 0.3).postln);
+		~pad.set(\pan,-1);
+~fw.set(\pan, 1);
+~fw.set(\scale_val, 1;);
+Synth(\padS, [\volume, 0.5, \pan, 1]);
 ("/Users/marcello/Music/Supercollider/PdW/strings/3.scd").openTextFile;
+("/Users/marcello/Music/Supercollider/pdw/minibees/cook_minibees.scd").openTextFile;
+("/Users/marcello/Music/Supercollider/PdW/beat/irregular_beat.scd").openTextFile
+
 (
+("/Users/marcello/Music/Supercollider/pdw/main/synths.scd").load;
 // 1 ibeat, 2, trigDrones, 3 gran1, 4 gran2, 5 ligeti, 6 \complexB, 7 ~pad, 8 ~stranga
 
 ("/Users/marcello/Music/Supercollider/PdW/beat/irregular_beat.scd").load;
@@ -22,9 +42,17 @@ Scale.bartok.ratios * 0.7
 var ratef; ratef =   rrand(0.2, 2);Synth(\granS, [\bufNum, ~b[~sample_id].bufnum, \volume, rrand(1.5, 2.25), \rate, ratef.postln, \dur, rrand(0.2, 0.5), \pan, -1, \pos, ~samples_data[~sample_id][8].choose.postln, \cutoff, ratef.linlin(0.2, 2, 500, 3000)]);
 
 ~trigDrones.set(\octave, rrand(0.5,1.5).postln);
+("/Users/marcello/Music/Supercollider/pdw/minibees/zeroVol.scd").load;
 (
-var speedxyz1 = SensorData.new, speedxyz2 = SensorData.new, speedxyz3 = SensorData.new, speedxyz4 = SensorData.new, cook_minibees, changePos = 0, oscar, stlen= 5, ltlen = 50, debug = 0, oscar_there = 0, val = 0, data_sel, hyper_data_sel,
-minibee1 = 3, minibee2 =0 , minibee3 = 0, minibee4 = 4,
+var speedxyz1 = SensorData.new, speedxyz2 = SensorData.new, speedxyz3 = SensorData.new, speedxyz4 = SensorData.new, cook_minibees, changePos = 0, oscar, stlen= 5, ltlen = 50, debug = 0, oscar_there = 1, val = 0, data_sel, hyper_data_sel,
+minibee1 = 0,
+minibee2 = 0,
+//minibee3 = 0,minibee4 = 0,
+
+//minibee3 = 1,minibee4 = 8,
+minibee3 = 3,minibee4 = 7,
+
+// runthrough: 3,7 - 1,8 -
 sensitive = 0,
 setup;
 

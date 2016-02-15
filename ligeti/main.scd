@@ -13,14 +13,17 @@
 
 	output = RLPF.ar(
 		//Mix.new(VarSaw.ar((freq + [0, -0.2, 0.2, 0.4, -0.4]).poll, 0, 0.8, 0.1)),
-		Mix.new(VarSaw.ar((freq  + Array.fill(num_tones, {gauss(0.0, 0.5) * deviation})), 0, 0.8, 0.1)), LFNoise2.ar(0.5).range((freq * 0.634423), (freq* 1.45)) * lowPass_scale, 0.5, 0.5
+		Mix.new(VarSaw.ar((freq  + Array.fill(num_tones, {gauss(0.0, 0.5) * deviation})), 0, 0.8, 0.1)), LFNoise2.ar(0.5).range((freq * 0.634423), (freq* 1.45)) * lowPass_scale, 0.5
 	);
 
 	output = Mix.ar(Array.fill(num_comb,{ CombN.ar(output, 0.02, rrand(0.001, 0.02), 2, 1/num_comb) })) *0.2 * volume * volume2;
 //	output = Resonz.ar(output, bpassFreq, bwr, 10);
 
 	output = LeakDC.ar(output);
-	output = GVerb.ar(output, 200, 3) * 0.5;
+//	output = GVerb.ar(output, 200, 3):
+	output = FreeVerb.ar(output, 0.5, 0.5) * 1.5;
+	output = Mix.new(output);
+
 	OffsetOut.ar(out, Limiter.ar(Pan2.ar(output, pan, 1), 0.9));
 }, [\ir]).play;
 
@@ -44,7 +47,10 @@ SynthDef(\freq_wanderS, { arg out=0, lo=70, hi=80, step=1, rate=10, volume=0, vo
 //	output = Resonz.ar(output, bpassFreq, bwr, 6);
 
 	output = LeakDC.ar(output);
-	output = GVerb.ar(output, 200, 3) * 0.5;
+//	output = GVerb.ar(output, 200, 3):
+	output = FreeVerb.ar(output, 0.5, 0.5) * 1.5;
+	output = Mix.new(output);
+
 	Out.ar(out, Limiter.ar(Pan2.ar(output, pan, 1), 0.9));
 }).play;
 )

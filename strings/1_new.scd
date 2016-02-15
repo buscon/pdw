@@ -8,7 +8,7 @@ Synth(\strangaS, [\volume, rrand(0.1, 0.4), \pitch, rrand(0.2, 0.8), \pitch_fine
 
 (
 
-~stranga = Ndef(\stranga, {arg speed = 0, volume = 0, volume2 = 1, pitch =0.8, pitch_fine =0.5, pitch_dev = 1, decay_time = 2, reverb_amt = 1,
+~stranga = Ndef(\stranga, {arg speed = 0, volume = 0, volume2 = 1, pitch =0.8, pitch_fine =0.5, pitch_dev = 1, decay_time = 2, reverb_amt = 1, pan = 1,
 	predelay = 0.048, combdecay=5, allpassdecay=1, revVol=0.31;
     var num_voices = 8, output, reverbed;
 	//pitch = MouseY.kr;
@@ -33,17 +33,20 @@ Synth(\strangaS, [\volume, rrand(0.1, 0.4), \pitch, rrand(0.2, 0.8), \pitch_fine
 	reverbed = output;
 
 	//reverbed = Array.fill(8, LeakDC.ar(AllpassL.ar(RLPF.ar(reverbed*0.9,3000), 0.2, {0.19.rand+0.01}!2, 3, reverb_amt)) ) * 0.5;
-	reverbed = GVerb.ar(reverbed, 100);
+	//reverbed = GVerb.ar(reverbed, 100);
     //};
-	output = Mix.new(reverbed) + output;
+	reverbed =  FreeVerb.ar(reverbed, 0.5, 0.5);
+
+	output = Mix.new(reverbed+ output) ;
 	output = LeakDC.ar(output);
 
+	output = Pan2.ar(output, pan);
 
 	Out.ar(0, output  * 0.25);
 }).play;
 
 
-SynthDef(\strangaS, {arg speed = 1, volume = 0, volume2 = 1, pitch =0.5, pitch_fine =0.5, pitch_dev = 0.0003, decay_time = 4, roomsize = 100, revtime = 3, trigger = 1;
+SynthDef(\strangaS, {arg speed = 1, volume = 0, volume2 = 1, pitch =0.5, pitch_fine =0.5, pitch_dev = 0.0003, decay_time = 4, roomsize = 100, revtime = 3, trigger = 1, pan = 1;
     var num_voices = 8, output, reverbed;
 	//pitch = MouseY.kr;
 	speed = MouseX.kr(0, 10);
@@ -64,10 +67,20 @@ SynthDef(\strangaS, {arg speed = 1, volume = 0, volume2 = 1, pitch =0.5, pitch_f
 	reverbed = output;
 
 	//reverbed = Array.fill(8, LeakDC.ar(AllpassL.ar(RLPF.ar(reverbed*0.9,3000), 0.2, {0.19.rand+0.01}!2, 3, reverb_amt)) ) * 0.5;
-	reverbed = GVerb.ar(reverbed, roomsize, revtime, drylevel:0);
+	//reverbed = GVerb.ar(reverbed, roomsize, revtime, drylevel:0);
     //};
+
+	reverbed =  FreeVerb.ar(reverbed, roomsize, revtime);
+
+	output = Mix.new(reverbed+ output) ;
+	output = LeakDC.ar(output);
+
+
 	output = Mix.new(reverbed) + output;
 	output = LeakDC.ar(output);
+
+	output = Pan2.ar(output, pan);
+
 	Out.ar(0, output  * 0.25);
 }).add;
 )

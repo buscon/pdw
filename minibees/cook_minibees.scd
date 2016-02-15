@@ -1,7 +1,7 @@
 
 
 
-~cook_minibees = { arg msg, speedxyz, oscar = 0, oscar_there = 0 , debug = 0, stlen = 3, ltlen = 50;
+~cook_minibees = { arg msg, speedxyz, oscar = 0, oscar_there = 0 , debug = 0,  stlen = 3, ltlen = 50;
 
 	var time, now, xyz,  val, longval, lastPeak;
 
@@ -22,9 +22,9 @@
 
 
 		if(debug ==1, {
-	("~val1: "++val).postln
-	("~lastPeak1: "++lastPeak[0]).postln;
-	("longval1: "++longval).postln;
+	("~val"++msg[1]++": "++val).postln
+	("~lastPeak"++msg[1]++": "++lastPeak[0]).postln;
+	("longval"++msg[1]++": "++longval).postln;
 
 	});
 

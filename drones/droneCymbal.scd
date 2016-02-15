@@ -1,22 +1,45 @@
 
 
 (
-~drC = Ndef(\droneCymbal, {arg lowPassFreq  =400, lowPassQ = 1, freq_scale = 0.7, volume = 0.5;
-	var lfo, num_freq, ratios;
+~drC = Ndef(\droneCymbal, {arg lowPassFreq  =400, lowPassQ = 1, freq_scale = 0.7, volume = 0.4, pan = 0;
+	var lfo, num_freq, ratios, output, volFilter;
 	num_freq = 50;//MouseY.kr(1,50);//50;
 	ratios = Scale.whole.ratios;
-	lfo =  LFNoise2.kr(1);
-	//lowPassFreq = MouseX.kr(100, 8000,1);lowPassQ = MouseX.kr(2, 1);
+	lfo =  LFCub.kr(1/8);
+	lowPassFreq = MouseX.kr(100, 8000);lowPassQ = MouseY.kr(2, 1);
 
-	s = BPF.ar(Ringz.ar(BrownNoise.ar(0.1), {exprand(50, 15000) * ratios.choose}.dup(num_freq) *
+	output = BPF.ar(Ringz.ar(BrownNoise.ar(0.1), {exprand(50, 15000) * ratios.choose}.dup(num_freq) *
 		//Select.kr(MouseX.kr(0, 1).round(0.2) * r.size * 0.5, r).poll  *
 		freq_scale
 		//* lfo.range(0.9, 1.1)
 		,{rrand(0.1, 1)}.dup(num_freq), 0.25).mean, (lowPassFreq * lfo.range(0.5, 1.5) )
-		, lowPassQ.reciprocal
+		, lowPassQ.reciprocal.poll, lowPassFreq.linlin(100, 8000, 1, 12).poll
 	) * 1/4 * volume;
 	//s = Array.fill(n, RLPF.ar(Ringz.ar(PinkNoise.ar(0.1), {rrand(300, 10000)} * Select.kr(MouseX.kr(0, 1) * r.size, r).poll *0.2 ,{rrand(0.5, 1.5)}, n.reciprocal/4), 1000)) * 1/16;
-	AdCVerb.ar( s, 2);
+	//AdCVerb.ar( output, 2);
+	output = FreeVerb.ar(output, 0.5, 0.8);
+	output = Out.ar(0, Pan2.ar(output, pan));
+
+}).play;
+
+SynthDef(\droneCymbal, {arg lowPassFreq  =400, lowPassQ = 1, freq_scale = 0.7, volume = 0.4, pan = -1;
+	var lfo, num_freq, ratios, output, volFilter;
+	num_freq = 50;//MouseY.kr(1,50);//50;
+	ratios = Scale.whole.ratios;
+	lfo =  LFCub.kr(1/8);
+	lowPassFreq = MouseX.kr(100, 8000);lowPassQ = MouseY.kr(2, 1);
+
+	output = BPF.ar(Ringz.ar(BrownNoise.ar(0.1), {exprand(50, 15000) * ratios.choose}.dup(num_freq) *
+		//Select.kr(MouseX.kr(0, 1).round(0.2) * r.size * 0.5, r).poll  *
+		freq_scale
+		//* lfo.range(0.9, 1.1)
+		,{rrand(0.1, 1)}.dup(num_freq), 0.25).mean, (lowPassFreq * lfo.range(0.5, 1.5) )
+		, lowPassQ.reciprocal.poll, lowPassFreq.linlin(100, 8000, 1, 12).poll
+	)  * volume ;
+	//s = Array.fill(n, RLPF.ar(Ringz.ar(PinkNoise.ar(0.1), {rrand(300, 10000)} * Select.kr(MouseX.kr(0, 1) * r.size, r).poll *0.2 ,{rrand(0.5, 1.5)}, n.reciprocal/4), 1000)) * 1/16;
+	//AdCVerb.ar( output, 2);
+	output = FreeVerb.ar(output, 0.5, 0.8) * EnvGen.ar(Env.perc(), doneAction:2);
+	output = Out.ar(0, Pan2.ar(output, pan));
 
 }).play;
 

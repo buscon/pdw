@@ -3,19 +3,19 @@ Synth(\string, [\pan, -1]);
 ~string.set(\freq_dev,0.6);
 Synth(\string,[\pan, 1, \sustain, 3, \freq_dev, 10]);
 ~string = Synth(\string, [\pan, -1]);
-*/
 ~string2 = Synth(\stringS, [\pan, 1]);
 FreqScope.new
 Synth(\stringS, [\pan, 1]);
 
+*/
 
 (
-~string = Ndef(\string, {arg out=0, freq=211, freq2 = 0, pan=0, mx = 10, mx2 = 0,sustain=0.5, volume=0.2, volume2 = 1, sgate = 0, sensitive = 0, freq_dev = 0.5, freq_scale = 1, brFreq = 400, lpfF = 3000, decay = 0.3;
+~string = Ndef(\string, {arg out=0, freq=211, freq2 = 0, pan=0, mx = 10, mx2 = 0,sustain=0.5, volume=0, volume2 = 1, sgate = 0, sensitive = 0, freq_dev = 0.5, freq_scale = 1, brFreq = 400, lpfF = 3000, decay = 0.3;
 	var pluck, period, string, impulse, trig, res_num = 12;
 
 	freq=freq + freq2;// + MouseY.kr(12,78).round(2) ;
 
-	mx=MouseX.kr(0,50).poll  ;
+	//mx=MouseX.kr(0,50).poll  ;
 
 	impulse =  Dust.ar(mx + mx2, );
 	//freq = Demand.ar(impulse, 0, Drand([60, 67, 64, 72, 58], inf)).midicps;

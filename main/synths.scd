@@ -27,7 +27,7 @@ SynthDef(\gran, { arg bufNum = 2, pos = 0.1, trigRate1 = 3,trigRate2 = 0,trigRat
 	sig = SelectX.ar(pv_amt, [sig,  IFFT(chain, 0) *4]);
 
 	sig = RLPF.ar(sig, 3000, 0.8, 0.7);
-	sig = FreeVerb.ar(sig, 0.5, 0.5, 0.8);
+	sig = FreeVerb.ar(sig, 0.95, 0.75, 0.8);
 	sig = Mix.ar(sig) * 1.5;
 
 	sig = Limiter.ar(sig, 0.8);
@@ -53,6 +53,50 @@ var env, grain, chain, chainout, mix, mixChain, reverbered;
 	mix = Pan2.ar(mix, pan);
 	mix = LeakDC.ar(mix);
 	Out.ar(out, mix.clip2(0.9)) ;
+
+}).add;
+
+SynthDef(\glitch_sounds, { arg outbus = 0, modN = 0.5, modF = 0.4, modAmp1 = 0.1, modAmp2 = 1, modAmp3 = 1, modC = 1, gpos = 0,  volume = 0, volume2 = 1;
+	var chain, snd;
+
+	snd = BPF.ar(WhiteNoise.ar(mul: SinOsc.ar(modF,phase:Rand (0,pi), mul:Rand( 0.1,1) )),modAmp1 * modAmp2 * modAmp3 *  Rand(0,400) * modN  )!2
+	+
+	BPF.ar(WhiteNoise.ar(mul: SinOsc.ar(modF,phase:Rand (0,pi), mul:Rand( 0.1,1) )),modAmp1 * modAmp2 * modAmp3  * Rand(0,400)* modN )!2
+	+
+	BPF.ar(WhiteNoise.ar(mul: SinOsc.ar(modF,phase:Rand (0,pi), mul:Rand( 0.1,1) )),modAmp1 * modAmp2 * modAmp3  * Rand(0,400) * modN )!2 ;
+	snd = BrownNoise.ar(modF, snd) + snd;
+	snd = snd.clip2(0.5);
+	snd = Array.fill(8, CombN.ar(snd, 0.2, {rrand(0.05,0.1)} * modC, {rrand(0.1,1)} * modC, 1/8));
+	snd = Mix.new(snd);
+	snd = HPF.ar(snd, 20);
+
+	//snd = GVerb.ar(snd, 5, 0.83423432, 0.5, spread:15, mul:0.2);
+	snd = Pan2.ar(snd, gpos) * volume * volume2 * 0.1;
+	snd = GVerb.ar(snd, 100);
+	snd = LeakDC.ar(snd);
+	Out.ar(outbus, snd ).clip2(0.5);
+
+}).add;
+
+
+SynthDef(\droneCymbal, {arg lowPassFreq  =400, lowPassQ = 1, freq_scale = 0.7, volume = 0.4, pan = 0;
+	var lfo, num_freq, ratios, output, volFilter;
+	num_freq = 50;//MouseY.kr(1,50);//50;
+	ratios = Scale.whole.ratios;
+	lfo =  LFCub.kr(1/8);
+	lowPassFreq = MouseX.kr(100, 8000);lowPassQ = MouseY.kr(2, 1);
+
+	output = BPF.ar(Ringz.ar(BrownNoise.ar(0.1), {exprand(50, 15000) * ratios.choose}.dup(num_freq) *
+		//Select.kr(MouseX.kr(0, 1).round(0.2) * r.size * 0.5, r).poll  *
+		freq_scale
+		//* lfo.range(0.9, 1.1)
+		,{rrand(0.1, 1)}.dup(num_freq), 0.25).mean, (lowPassFreq * lfo.range(0.5, 1.5) )
+		, lowPassQ.reciprocal.poll, lowPassFreq.linlin(100, 8000, 1, 12).poll
+	)  * volume ;
+	//s = Array.fill(n, RLPF.ar(Ringz.ar(PinkNoise.ar(0.1), {rrand(300, 10000)} * Select.kr(MouseX.kr(0, 1) * r.size, r).poll *0.2 ,{rrand(0.5, 1.5)}, n.reciprocal/4), 1000)) * 1/16;
+	//AdCVerb.ar( output, 2);
+	output = FreeVerb.ar(output, 0.5, 0.8) * EnvGen.ar(Env.perc(), doneAction:2);
+	output = Out.ar(0, Pan2.ar(output, pan));
 
 }).add;
 )
