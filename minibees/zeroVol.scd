@@ -7,3 +7,7 @@
 		Ndef(\complexB).set(\volume, 0);
 		~pad.set(\volume, 0);
 		~stranga.set(\volume, 0);
+		~string.set(\volume, 0);
+
+~drC.set(\volume, 0);
+~glitch_drones.set(\volume, 0);

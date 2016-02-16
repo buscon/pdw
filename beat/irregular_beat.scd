@@ -8,7 +8,7 @@ Ndef.clear
 
 ~ibeat.set(\speed, 1);
 (
-~ibeat = Ndef(\ibeat, { arg speed = 1, speed2 = 0, volume = 0, scale_freq = 1, pitchRatio = 1, pitchDispertion = 0, timeDispertion = 0, which  = 0;
+~ibeat = Ndef(\ibeat, { arg speed = 1, speed2 = 0, volume = 0, volume2 = 1, scale_freq = 1, pitchRatio = 1, pitchDispertion = 0, timeDispertion = 0, which  = 0;
 	var ausgang, input;
 	//speed = MouseX.kr(0.1,4, 0); which = MouseY.kr(); pitchDispertion = MouseY.kr(0, 0.1);timeDispertion = MouseX.kr(0, 0.2);
 	speed = speed +speed2;
@@ -17,7 +17,7 @@ Ndef.clear
 
 	ausgang = SelectX.ar(which, [ausgang, PitchShift.ar(ausgang, 0.2, pitchRatio, pitchDispertion, timeDispertion)]);
 
-	ausgang = Pan2.ar(ausgang, BrownNoise.kr(1), volume);
+	ausgang = Pan2.ar(ausgang, BrownNoise.kr(1), volume * volume2);
 
 	ausgang = GVerb.ar(ausgang, 200, 2);
 	//Out.ar(reverb_out, ausgang * reverb_amt);

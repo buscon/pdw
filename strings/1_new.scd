@@ -56,7 +56,7 @@ SynthDef(\strangaS, {arg speed = 1, volume = 0, volume2 = 1, pitch =0.5, pitch_f
 	output = CombC.ar( PinkNoise.ar(Decay2.kr(Trig.kr(trigger, 0.01), 0.01, 0.1, 0.1).dup(num_voices)),  0.1, {((
 		gauss(0.002, pitch_dev.linlin(0, 1, 0.0001, 0.0005)).abs
 		//0.004.rand
-		+ pitch_fine.linlin(0, 1, 0.0009,0.0001).lag(0.4)) * pitch.linlin(0, 1, 5, 0.5)) }.dup(num_voices), decay_time) * EnvGen.ar(Env.perc(0.02, 3), 1, doneAction:2);
+		+ pitch_fine.linlin(0, 1, 0.0009,0.0001).lag(0.4)) * pitch.linlin(0, 1, 5, 0.5)) }.dup(num_voices), decay_time) ;
 	output = RLPF.ar(output, pitch.linlin(0, 1, 300, 3000 ), 0.3, 1);
 
 	output = Pan2.ar(output, {1.0.rand2}.dup(num_voices));
@@ -70,7 +70,7 @@ SynthDef(\strangaS, {arg speed = 1, volume = 0, volume2 = 1, pitch =0.5, pitch_f
 	//reverbed = GVerb.ar(reverbed, roomsize, revtime, drylevel:0);
     //};
 
-	reverbed =  FreeVerb.ar(reverbed, roomsize, revtime);
+	reverbed =  FreeVerb.ar(reverbed, roomsize, revtime)* EnvGen.ar(Env.perc(0.02, 3), 1, doneAction:2);
 
 	output = Mix.new(reverbed+ output) ;
 	output = LeakDC.ar(output);

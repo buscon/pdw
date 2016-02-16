@@ -1,5 +1,7 @@
+
+
 (
-~fw = Ndef(\freq_wander, { arg out=0, lo=70, hi=80, step=1, rate=10, volume=0, volume2 = 1, pan=0, lgate = 1, scale_val = 1, scale_tones = 1, deviation = 1, bwr = 0.2, lowPass_scale = 1;
+~fw = Ndef(\freq_wander, { arg out=0, lo=70, hi=80, step=1, rate=10, volume=0, volume2 = 1, pan=0, lgate = 1, scale_val = 1, scale_tones = 1, deviation = 1, freq_scale = 1, bwr = 0.2, lowPass_scale = 1;
 	var output, freq, num_comb, num_tones, freq_list, bpassFreq;
 	num_comb = 24;
 	num_tones = num_comb*2;
@@ -11,12 +13,12 @@
 	bpassFreq = freq * 0.45232423;
 //	freq = Demand.ar(Impulse.ar(rate), 0, SinOsc.ar(0.02).range(lo, hi)).midicps * scale_val;
 
-	output = RLPF.ar(
+	output = LPF.ar(
 		//Mix.new(VarSaw.ar((freq + [0, -0.2, 0.2, 0.4, -0.4]).poll, 0, 0.8, 0.1)),
-		Mix.new(VarSaw.ar((freq  + Array.fill(num_tones, {gauss(0.0, 0.5) * deviation})), 0, 0.8, 0.1)), LFNoise2.ar(0.5).range((freq * 0.634423), (freq* 1.45)) * lowPass_scale, 0.5
+		Mix.new(VarSaw.ar((freq  + Array.fill(num_tones, {gauss(0.0, 0.5) * deviation})) * freq_scale, 0, 0.8, 0.1)), LFNoise2.ar(0.5).range((freq * 0.634423), (freq* 1.45)) * lowPass_scale, 0.5
 	);
 
-	output = Mix.ar(Array.fill(num_comb,{ CombN.ar(output, 0.02, rrand(0.001, 0.02), 2, 1/num_comb) })) *0.2 * volume * volume2;
+	output = Mix.ar(Array.fill(num_comb,{ CombN.ar(output, 0.02, rrand(0.001, 0.02), 0.5, 1/num_comb) })) *1 * volume * volume2;
 //	output = Resonz.ar(output, bpassFreq, bwr, 10);
 
 	output = LeakDC.ar(output);
