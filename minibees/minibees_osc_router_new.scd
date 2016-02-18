@@ -3,9 +3,14 @@
 
 
 - couple of sounds:
-1. 7 pad with wind oscar, preset 3, side 2
-2. 3 granular with bass oscar, preset 1
-3. 5 ligeti with preset 3
+Szene1  5 ligeti with preset 3 oscar (granular like) /soundA 2
+/soundA 3 => other kind of granular
+Szene2a oder übergang 3-4 7 pad with wind /soundB 3
+Szene2b 1 ibeat with?
+Szene3 6 beat, 9 drC
+Szene4 solo 8
+übergang? 3 granular with bass oscar, /soundA 1
+Szene5 solo 12
 
 - 7, 8:
 *pan the sounds!
@@ -19,16 +24,20 @@ Synth(\droneCymbal, [ \lowPassFreq , rrand(100, 8000).postln, \lowPassQ, rrand(1
 
 ~pad.set(\scale_freq, (Scale.bartok.ratios.choose * 0.5).postln);
 ~stranga.set(\pitch, (Scale.bartok.ratios.choose * 0.3).postln);
-		~pad.set(\pan,-1);
+~pad.set(\pan,-1);
 ~fw.set(\pan, 1);
 ~fw.set(\scale_val, 1;);
 Synth(\padS, [\volume, 0.5, \pan, 1]);
+
 ("/Users/marcello/Music/Supercollider/PdW/strings/3.scd").openTextFile;
 ("/Users/marcello/Music/Supercollider/pdw/minibees/cook_minibees.scd").openTextFile;
 ("/Users/marcello/Music/Supercollider/PdW/beat/irregular_beat.scd").openTextFile
 ("/Users/marcello/Music/Supercollider/pdw/pad/1.scd").openTextFile;
+("/Users/marcello/Music/Supercollider/PdW/drones/droneCymbal.scd").openTextFile;
+
 
 (
+("/Users/marcello/Music/Supercollider/pdw/main/reverb.scd").load;
 ("/Users/marcello/Music/Supercollider/pdw/main/synths.scd").load;
 // 1 ibeat, 2, trigDrones, 3 gran1, 4 gran2, 5 ligeti, 6 \complexB, 7 ~pad, 8 ~stranga
 
@@ -63,7 +72,7 @@ var ratef; ratef =   rrand(0.2, 2);Synth(\granS, [\bufNum, ~b[~sample_id].bufnum
 // 1: more variations, especially by command line. more little sounds at the beginning
 // 5: longer release of the sound (not sensitive)
 )
-~fw.set(\scale_val, (Scale.bartok.ratios.choose * 0.5).postln)
+~fw.set(\scale_val, (Scale.bartok.ratios.choose * 1.2).postln)
 
 (
 ~minibee3 = 0; ~minibee1 = 0;
@@ -79,7 +88,7 @@ var ratef; ratef =   rrand(0.2, 2);Synth(\granS, [\bufNum, ~b[~sample_id].bufnum
 ~minibee3 = 7; ~minibee1 = 0; // Oscar wind sound => for Martina
 ("/Users/marcello/Music/Supercollider/pdw/minibees/zeroVol.scd").load;
 )
-~string.set(\freq_scale, (Scale.bartok.ratios.choose * 0.6).postln);
+~string.set(\freq_scale, (Scale.bartok.ratios.choose * 0.8).postln);
 ~pad.set(\scale_freq, (Scale.bartok.ratios.choose * 0.5).postln);
 
 (
@@ -105,7 +114,7 @@ Szene 5: all 3 together
 
 */
 
-var speedxyz1 = SensorData.new, speedxyz2 = SensorData.new, speedxyz3 = SensorData.new, speedxyz4 = SensorData.new, cook_minibees, changePos = 0, oscar, stlen= 5, ltlen = 50, debug = 0, oscar_there = 1, val = 0, data_sel, hyper_data_sel,
+var speedxyz1 = SensorData.new, speedxyz2 = SensorData.new, speedxyz3 = SensorData.new, speedxyz4 = SensorData.new, cook_minibees, changePos = 0, stlen= 5, ltlen = 50, debug = 0, oscar_there = 1, val = 0, data_sel, hyper_data_sel, group
 //minibee4 = 0,
 
 //minibee1 = 5, minibee2 = 1,
@@ -125,8 +134,8 @@ sensitive = 0,
 setup;
 //~minibee1 = 0; ~minibee2 = 0;
 //~minibee1 = 9; ~minibee2 = 6;
-oscar = NetAddr("192.168.1.7", 8000);
-
+~oscar = NetAddr("192.168.1.7", 8000);
+group = Group.basicNew(s,1);
 //~minibee3 = 0; ~minibee1 = 0; ~minibee4 = 0; ~minibee2 = 0;
 
 		//~sig1[0] = ~ibeat;
@@ -144,39 +153,40 @@ oscar = NetAddr("192.168.1.7", 8000);
 	res = case
 	{ msg[1] == 1} {
 		var data;
-		data = ~cook_minibees.value(msg, speedxyz1, oscar, oscar_there, debug, stlen, ltlen );
-		~data_sel.value(data[0], data[1], ~minibee1 );
+		data = ~cook_minibees.value(msg, speedxyz1, ~oscar, oscar_there, debug, stlen, ltlen );
+		~data_sel.value(data[0], data[1], ~minibee1, group );
 		~val1 = data[0];
 
 	}
 	{ msg[1] == 2} {
 		var data;
 
-		data = ~cook_minibees.value(msg, speedxyz2, oscar, oscar_there, debug, stlen, ltlen);
-		~data_sel.value(data[0], data[1], ~minibee2 );
+		data = ~cook_minibees.value(msg, speedxyz2, ~oscar, oscar_there, debug, stlen, ltlen);
+		~data_sel.value(data[0], data[1], ~minibee2, group );
 		~val2 = data[0];
 
 	}
 	{ msg[1] == 3} {
 		var data;
 
-		data = ~cook_minibees.value(msg, speedxyz3, oscar, oscar_there, debug, stlen, ltlen);
+		data = ~cook_minibees.value(msg, speedxyz3, ~oscar, oscar_there, debug, stlen, ltlen);
 
-		~data_sel.value(data[0], data[1], ~minibee3 );
+		~data_sel.value(data[0], data[1], ~minibee3, group );
 		~val3 = data[0];
 	}
 	{ msg[1] == 4} {
 		var data;
 
 
-		data = ~cook_minibees.value(msg, speedxyz4, oscar, oscar_there, debug, stlen, ltlen);
+		data = ~cook_minibees.value(msg, speedxyz4, ~oscar, oscar_there, debug, stlen, ltlen);
 
-		~data_sel.value(data[0], data[1], ~minibee4 );
+		~data_sel.value(data[0], data[1], ~minibee4, group );
 				~val4 = data[0];
 
 
 	};
-
+	~medVal1 = (~val3 + ~val4)/2;
+	~expVal1 = (pow(~val3,2) + pow(~val4,2)).sqrt;
 
 
 }, "/minibee/data" ).permanent_(false);
@@ -188,6 +198,8 @@ oscar = NetAddr("192.168.1.7", 8000);
     //data to plot
     [
     [ ~val1, ~val2, ~val3, ~val4], // view the two streams superimposed
+
+ //   [ ~val3, ~val4, ~medVal1, ~expVal1], // view the two streams superimposed
 //    [e, f], // view the two streams superimposed
 
     //[~e - ~f], // view their differene

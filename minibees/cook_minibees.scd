@@ -5,8 +5,6 @@
 
 	var time, now, xyz,  val, longval, lastPeak;
 
-
-
 	speedxyz.stlen_( stlen );
 	speedxyz.ltlen_( ltlen );
 
@@ -18,8 +16,6 @@
 			val = speedxyz.shortStdDev.explin(0.0003, 0.2, 0, 1);//.explin(0.0003, 0.2, 0, 1);
 			longval = speedxyz.longStdDev.linlin(0.001, 0.1, 0.0, 1);
 			lastPeak = speedxyz.lastPeak;
-
-
 
 		if(debug ==1, {
 	("~val"++msg[1]++": "++val).postln

@@ -1,4 +1,51 @@
 (
+
+SynthDef(\GVerb, {|outbus, mix = 0.06, room = 0.2, damp = 0.5, amp = 1.0|
+var signal;
+signal = In.ar(outbus, 2);
+	signal = GVerb.ar(signal, 100, 3);
+	signal = LeakDC.ar(signal);
+ReplaceOut.ar(outbus, signal);
+}).add;
+
+SynthDef(\strangaS, {arg speed = 1, volume = 0, volume2 = 1, pitch =0.5, pitch_fine =0.5, pitch_dev = 0.0003, decay_time = 4, roomsize = 100, revtime = 3, trigger = 1, pan = 0;
+    var num_voices = 8, output, reverbed;
+	//pitch = MouseY.kr;
+	speed = MouseX.kr(0, 10);
+	//decay_time = MouseY.kr(6, 1);
+	//pitch_dev = GrayNoise.kr(0.01).range(0.001, 0.009).poll;
+//PinkNoise.ar(Decay.kr((trigger + Impulse.kr(speed, 0, 10) + Trig.kr(sensitive, 0.05)), 0.05 * decay_scale)) * volume * volume2;
+	output = CombC.ar( PinkNoise.ar(Decay2.kr(Trig.kr(trigger, 0.01), 0.01, 0.1, 0.1).dup(num_voices)),  0.1, {((
+		gauss(0.002, pitch_dev.linlin(0, 1, 0.0001, 0.0005)).abs
+		//0.004.rand
+		+ pitch_fine.linlin(0, 1, 0.0009,0.0001).lag(0.4)) * pitch.linlin(0, 1, 5, 0.5)) }.dup(num_voices), decay_time) ;
+	output = RLPF.ar(output, pitch.linlin(0, 1, 300, 3000 ), 0.3, 1);
+
+	output = Pan2.ar(output, {1.0.rand2}.dup(num_voices));
+	//output = Impulse.ar([3,4]);
+	output = Mix.ar(output);
+
+	output = output * Lag3UD.kr(volume * volume2, 0, 0.1)  * EnvGen.ar(Env.perc(0.02, 3), 1, doneAction:2);
+	reverbed = output;
+
+	//reverbed = Array.fill(8, LeakDC.ar(AllpassL.ar(RLPF.ar(reverbed*0.9,3000), 0.2, {0.19.rand+0.01}!2, 3, reverb_amt)) ) * 0.5;
+	//reverbed = GVerb.ar(reverbed, roomsize, revtime, drylevel:0);
+    //};
+
+	//reverbed =  FreeVerb.ar(reverbed, roomsize, revtime)* EnvGen.ar(Env.perc(0.02, 3), 1, doneAction:2);
+
+	//output = Mix.new(reverbed+ output) ;
+	output = LeakDC.ar(output);
+
+
+	//output = Mix.new(reverbed) + output;
+	//output = LeakDC.ar(output);
+
+	output = Pan2.ar(output, pan);
+
+	Out.ar(0, output  * 0.25);
+}).add;
+
 SynthDef(\gran, { arg bufNum = 2, pos = 0.1, trigRate1 = 3,trigRate2 = 0,trigRate3 = 0, rate = 1, frate = 1, overlap = 4, amtRnd = 0, lfoR = 4, dur = 0.3, list_of_pos = [0, 0.5],
 		amFreq = 64, amVol = 0.5, pan = 0,
 	stretch_bins = 0.5, //0.1-4 exponential

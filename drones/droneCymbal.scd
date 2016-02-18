@@ -13,7 +13,7 @@
 		freq_scale
 		//* lfo.range(0.9, 1.1)
 		,{rrand(0.1, 1)}.dup(num_freq), 0.25).mean, (lowPassFreq * lfo.range(0.7, 1.2) )
-		, lowPassQ.reciprocal, lowPassFreq.linlin(100, 8000, 1, 12)
+		, lowPassQ.reciprocal.lag(0.3), lowPassFreq.linlin(100, 8000, 1, 12).lag(0.3)
 	) * 1/4 * volume;
 	//s = Array.fill(n, RLPF.ar(Ringz.ar(PinkNoise.ar(0.1), {rrand(300, 10000)} * Select.kr(MouseX.kr(0, 1) * r.size, r).poll *0.2 ,{rrand(0.5, 1.5)}, n.reciprocal/4), 1000)) * 1/16;
 	//AdCVerb.ar( output, 2);

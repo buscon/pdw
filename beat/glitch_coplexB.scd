@@ -1,4 +1,6 @@
 // map it to mt! centerX control the filter , hi activity or a trigger control which (which is not interesting as continuous value)
+//Ndef(\complexB).set(\decay_bass, 1);
+
 (
 var wave, buf;
 wave = Wavetable.chebyFill(512, [1]);
@@ -41,7 +43,7 @@ EnvGen.ar(Env([0, 0.5, 0.2, 0], [0.01, 0.13 * decay_bass, 0.1* decay_bass], -4),
 
 	waves = Shaper.ar(buf.bufnum, waves, 0.5);
 
-	waves = LeakDC.ar(waves, 0.995)  * 0.5;
+	//waves = LeakDC.ar(waves, 0.995)  * 0.5;
 	waves = BPF.ar(waves, freqW*2, 0.1, 4);
 
 	freq = Demand.ar(ctrigs, 0, Dwhite(8000, 12000));
@@ -65,6 +67,7 @@ BPF.ar
 	//distortion = MouseX.kr();
 	output = MidEQ.ar(output, 2000, 0.7, 6) * volume * volume2;
 	output = GVerb.ar(output, 100, 1.24, 0.1, 0.95, 15, 0.dbamp, -9.dbamp, -11.dbamp);
+	output = LeakDC.ar(output);
 	//output = Limiter.ar(output * 0.5);
 	Out.ar(0, output);
 }).play;
