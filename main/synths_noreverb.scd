@@ -26,20 +26,11 @@ SynthDef(\strangaS, {arg speed = 1, volume = 0, volume2 = 1, pitch =0.5, pitch_f
 	output = Mix.ar(output);
 
 	output = output * Lag3UD.kr(volume * volume2, 0, 0.1)  * EnvGen.ar(Env.perc(0.02, 3), 1, doneAction:2);
-	reverbed = output;
 
-	//reverbed = Array.fill(8, LeakDC.ar(AllpassL.ar(RLPF.ar(reverbed*0.9,3000), 0.2, {0.19.rand+0.01}!2, 3, reverb_amt)) ) * 0.5;
-	//reverbed = GVerb.ar(reverbed, roomsize, revtime, drylevel:0);
-    //};
 
-	//reverbed =  FreeVerb.ar(reverbed, roomsize, revtime)* EnvGen.ar(Env.perc(0.02, 3), 1, doneAction:2);
-
-	//output = Mix.new(reverbed+ output) ;
 	output = LeakDC.ar(output);
 
-
-	//output = Mix.new(reverbed) + output;
-	//output = LeakDC.ar(output);
+	output = Mix.ar(output);
 
 	output = Pan2.ar(output, pan);
 
@@ -139,10 +130,10 @@ SynthDef(\droneCymbal, {arg lowPassFreq  =400, lowPassQ = 1, freq_scale = 0.7, v
 		//* lfo.range(0.9, 1.1)
 		,{rrand(0.1, 1)}.dup(num_freq), 0.25).mean, (lowPassFreq * lfo.range(0.5, 1.5) )
 		, lowPassQ.reciprocal, lowPassFreq.linlin(100, 8000, 1, 12)
-	)  * volume ;
+	)  * volume * EnvGen.ar(Env.perc(), doneAction:2);
 	//s = Array.fill(n, RLPF.ar(Ringz.ar(PinkNoise.ar(0.1), {rrand(300, 10000)} * Select.kr(MouseX.kr(0, 1) * r.size, r).poll *0.2 ,{rrand(0.5, 1.5)}, n.reciprocal/4), 1000)) * 1/16;
 	//AdCVerb.ar( output, 2);
-	output = FreeVerb.ar(output, 0.5, 0.8) * EnvGen.ar(Env.perc(), doneAction:2);
+	//output = FreeVerb.ar(output, 0.5, 0.8) ;
 	output = Out.ar(0, Pan2.ar(output, pan));
 
 }).add;
@@ -171,17 +162,88 @@ SynthDef(\stringS, {arg out=0, freq=211, freq2 = 0, pan=0, mx = 0, mx2 = 0,susta
 	//freq.poll;
 	//string = BRF.ar(string, brFreq, 0.5);
 
-	string = LeakDC.ar(LPF.ar(Pan2.ar(string, pan), 3000)) * volume;
+	string = LeakDC.ar(LPF.ar(Pan2.ar(string, pan), 3000)) * volume * EnvGen.ar(Env.perc(0.02, 3), sgate, doneAction:2);
 //	string = GVerb.ar(string, 200, 1) * 0.5;
 
 //	string = GVerb.ar(string, 100, 1.85, 0.41, 0.19, 0.71, 0.35, 0.28 ) * 0.5;
 	string = Mix.new(string);
 
-	string = GVerb.ar(string, 200, 1) * 0.5 * EnvGen.ar(Env.perc(0.02, 3), sgate, doneAction:2);
+	//string = GVerb.ar(string, 200, 1) * 0.5 ;
 	string = Pan2.ar(string, pan, 3);
 	//DetectSilence.ar(string, doneAction:2);
 
 	Out.ar(out, string);
 }).add;
+
+SynthDef(\freq_wanderS, { arg out=0, lo=70, hi=80, step=1, rate=10, volume=0, volume2 = 1, pan=0, lgate = 1, scale_val = 1, scale_tones = 1, deviation = 1, bwr = 0.2;
+	var output, freq, num_comb, num_tones, freq_list, bpassFreq;
+	num_comb = 24;
+	num_tones = num_comb*2;
+	//deviation = MouseX.kr(1, 150);step = MouseX.kr(0.01, 10);
+//	freq = Demand.ar(Impulse.ar(rate), 0,Dbrown(lo, hi, step) ).midicps.poll * scale_val;
+	freq = rrand(lo, hi).midicps* scale_val;
+//	freq = Demand.ar(Impulse.ar(rate), 0, SinOsc.ar(0.02).range(lo, hi)).midicps * scale_val;
+
+	output = RLPF.ar(
+		//Mix.new(VarSaw.ar((freq + [0, -0.2, 0.2, 0.4, -0.4]).poll, 0, 0.8, 0.1)),
+		Mix.new(VarSaw.ar((freq  + Array.fill(num_tones, {gauss(0.0, 0.5) * deviation})), 0, 0.8, 0.1)), LFNoise2.ar(0.5).range((freq * 0.634423), (freq* 0.834232)), 0.5, 0.5
+	);
+
+	output = Mix.ar(Array.fill(num_comb,{ CombN.ar(output, 0.02, rrand(0.001, 0.02), 0.5, 1/num_comb) })) * 0.2 * volume * volume2 * EnvGen.ar(Env.perc(0.02, 5, curve:-14), 1, doneAction:2);
+//	bpassFreq = freq * 0.45232423;
+
+//	output = Resonz.ar(output, bpassFreq, bwr, 6);
+
+	output = LeakDC.ar(output);
+//	output = GVerb.ar(output, 200, 3):
+//	output = FreeVerb.ar(output, 0.5, 0.5) * 1.5;
+	output = Mix.new(output);
+
+	Out.ar(out, Limiter.ar(Pan2.ar(output, pan, 1), 0.9));
+}).play;
+
+SynthDef(\trigDrones, {| out = 0, speed = 0, select = 0, decaytime = 0.5, volume = 0, volume2 = 1, sensitive = 0, rate = 1, octave = 0.5, lpfFreq = 4000 |
+
+	var pitch, mousex, ausgang, size, pluck, period, string,trigger = 0, triggerNote, timer;
+
+	//pitch = Scale.rast.cents;		// e a d g b e
+	pitch = [1,9/8,6/5,4/3,3/2,8/5,7/4] * octave * 0.5;// * 52;
+	mousex = select;//
+//	mousex = MouseX.kr; speed = MouseY.kr(0, 4);
+size = 100;
+
+	trigger = Mix.fill(size, { arg i;
+		trigger =  HPZ1.kr(mousex > (0.01 +(i * size.reciprocal)).postln).abs;
+	});
+
+	pluck = PinkNoise.ar(Decay.kr((trigger + Impulse.kr(speed, 0, 5) + Trig.kr(sensitive, 0.05)), 0.05)) * volume * volume2;
+
+	period = Select.kr(mousex * pitch.size, pitch);
+
+	ausgang = RLPF.ar(Ringz.ar(pluck, {rrand(500, 10000)}.dup(12) * period * rate,{rrand(0.5, 1.5)}.dup(12) * decaytime, 0.1).mean, lpfFreq ) * 0.02;
+
+	ausgang = LeakDC.ar(ausgang) * EnvGen.ar(Env.perc(0.02, 1.5), 1, doneAction:2);
+
+
+	Out.ar(out,ausgang);
+
+}).add;
+
+SynthDef(\padS, { arg  freqMul = 0.6,  master_vol = 0.3, volume = 0, scale_freq = 0.5, filter_mod = 1, rq_mod = 1,  volume2 = 1, pan = 0;
+	var sig, freq, gen, fmod, rqmod;
+	freq = { ([60, 67, 75, 89, 106].choose.midicps * scale_freq) * LFNoise2.kr(1,0.01,1) }!24;
+	gen = LFSaw.ar(freq* freqMul) * 0.1;
+	//filter_mod = MouseX.kr(0.1, 4.5, 1); rq_mod = MouseY.kr(0.1, 2.0);
+	fmod = LFCub.kr(1/12).range(1, 1.5) * filter_mod; // modulate filter
+	rqmod = LFNoise2.kr(1/8).range(0.7,1.3) * rq_mod;
+		sig = Resonz.ar(gen, (freq.mean * fmod) , rqmod, rqmod.reciprocal * 0.5) * EnvGen.ar(Env.perc(0.5, 3, curve:-6), doneAction:2);
+
+	sig = Splay.ar(sig, 1, 3, BrownNoise.kr(3)) * volume * volume2;
+
+	sig = Mix.new(sig);
+	sig = Pan2.ar(sig, pan);
+	Out.ar(0, sig);
+}).add;
+
 )
 

@@ -149,7 +149,7 @@ todo:
 		~fw.set(\step, val.linlin(0.3, 1, 0.01, 10));
 		~fw.set(\freq_scale, val.linlin(0.5, 1, 1, 2));
 
-		~fw.set(\volume2, val.linlin(0.2, 1, 1, 4).postln);
+		~fw.set(\volume2, val.linlin(0.2, 1, 1, 4));
 		~fw.set(\lowPass_scale, val.linlin(0.3, 0.8, 1, 1));
 
 		if(val > 0.95, {
@@ -193,16 +193,17 @@ todo:
 			Ndef(\complexB).set(\volume, val.linlin(0, 0.1, 0, 0.5));
 
 			Ndef(\complexB).set(\volume2, val.linlin(0.5, 1, 1, 2));
-			Ndef(\complexB).set(\lpfFreq, val.linexp(0.1, 0.6, 50, 20000));
+			Ndef(\complexB).set(\lpfFreq, val.linexp(0.1, 0.8, 50, 20000));
 
 			//Ndef(\complexB).set(\hpfFreq, val.linlin(0.9, 1, 10, 1000));
 
 
-//			Ndef(\complexB).set(\decay_bass, val.linlin(0.1, 0.4, 0.1, 1));
+			Ndef(\complexB).set(\decay_bass, val.linlin(0.6, 0.8, 1, 3));
 
 			Ndef(\complexB).set(\speed, val.linlin(0, 0.2, 3, 1.5));
+			Ndef(\complexB).set(\freqBmul, val.linlin(0.5, 1, 1, 1.5));
 
-			Ndef(\complexB).set(\speed2, val.linlin(0.7, 1, 0, -1));
+	//		Ndef(\complexB).set(\speed2, val.linlin(0.8, 1, 0, -0.25));
 	}
 	{ which == 7 } {
 
@@ -212,15 +213,15 @@ todo:
 			//filter_mod = MouseX.kr(0.1, 4.5, 1); rq_mod = MouseY.kr(0.1, 2.0);
 		~pad.set(\volume2, val.linlin(0.3, 1, 1, 3.5));
 
-		~pad.set(\filter_mod, val.linlin(0.3, 1, 0.5, 4.5));
-		~pad.set(\rq_mod, val.linlin(0.4, 0.7, 0.25, 1.0));
+		~pad.set(\filter_mod, val.linexp(0.2, 1, 0.5, 4.5));
+		~pad.set(\rq_mod, val.linexp(0.3, 0.7, 0.25, 1.0));
 		//~pad.set(\scale_freq, val.linlin(0.85, 1, 0.5, 0.55));
 
 		if((~sensitive7 == 0) && (val > 0.04), {
 			~sensitive7 = 1;
 			//~ratef = (Scale.bartok.ratios.choose * 0.7);
 			//~gran1.set(\pos, (Scale.bartok.ratios.choose * 0.7).choose.postln);
-			Synth(\padS, [\volume, rrand(0.05, 0.1).postln, \scale_freq, rrand(0.3, 0.75), \filter_mod, rrand(0.5, 1) ]);
+			Synth(\padS, [\volume, rrand(0.1, 0.2), \scale_freq, rrand(0.3, 0.75), \filter_mod, rrand(0.5, 1) ]);
 		});
 		if((val < 0.04), { ~sensitive7 = 0;			 });
 
@@ -228,7 +229,7 @@ todo:
 	{ which == 8 } {
 		//val = val.linlin(0,1,0,0.7);
 		~stranga.set(\volume, val.linlin(0, 0.05, 0, 1.5));
-		~stranga.set(\volume2, val.linexp(0.1, 1, 1, 9));
+		~stranga.set(\volume2, val.linexp(0.1, 1, 1, 7));
 
 		~stranga.set(\speed, val.linlin(0, 0.8, 0, 5));
 		~stranga.set(\pitch_dev, val.linlin(0.5, 1, 0.1, 2));
@@ -255,7 +256,7 @@ todo:
 		if((~sensitive9 == 0) && (val > 0.06), {
 			~sensitive9 = 1;
 
-			Synth(\droneCymbal, [ \lowPassFreq , rrand(100, 8000).postln, \lowPassQ, rrand(1,2).postln, \freq_scale, rrand(0.5, 1.2), \volume, rrand(0.2, 0.5), \pan, -1]);		});
+			Synth(\droneCymbal, [ \lowPassFreq , rrand(100, 8000), \lowPassQ, rrand(1,2), \freq_scale, rrand(0.5, 1.2), \volume, rrand(0.2, 0.5), \pan, rrand(-1, 1)]);		});
 		if((val < 0.06), { ~sensitive9 = 0;			 });
 
 			}
@@ -270,7 +271,7 @@ todo:
 		if((~sensitive10 == 0) && (val > 0.3), {
 			~sensitive10 = 1;
 
-			Synth.head(group, [\volume, rrand(0.2, 0.5) * 1.25, \pitch, rrand(0.3, 0.8), \pitch_fine, rrand(0.1, 0.5), \pitch_dev, rrand(0.3, 0.7), \decay_time, rrand(1.0, 7.0), \roomsize, rrand(80, 150), \revtime , rrand(2.0,6.0), \pan, 1  ]);
+			Synth(\strangaS, [\volume, rrand(0.2, 0.5) * 1.25, \pitch, rrand(0.3, 0.8), \pitch_fine, rrand(0.1, 0.5), \pitch_dev, rrand(0.3, 0.7), \decay_time, rrand(1.0, 7.0), \roomsize, rrand(80, 150), \revtime , rrand(2.0,6.0), \pan, 1  ]);
 		});
 		if((val < 0.3), { ~sensitive10 = 0;			 });
 	}
@@ -280,7 +281,7 @@ todo:
 		if((~sensitive11 == 0) && (val > 0.3), {
 			~sensitive11 = 1;
 
-			Synth.head(group, [\volume, rrand(0.1, 0.35)* 0.75, \pitch, rrand(1.0, 2.0), \pitch_fine, rrand(0.8, 1.5), \pitch_dev, rrand(0.5, 0.8), \decay_time, rrand(1.0, 7.0), \roomsize, rrand(80, 150),\revtime , rrand(2.0,6.0), \pan, -1 ]);
+			Synth(\strangaS,  [\volume, rrand(0.1, 0.35)* 0.75, \pitch, rrand(1.0, 2.0), \pitch_fine, rrand(0.8, 1.5), \pitch_dev, rrand(0.5, 0.8), \decay_time, rrand(1.0, 7.0), \roomsize, rrand(80, 150),\revtime , rrand(2.0,6.0), \pan, -1 ]);
 		});
 		if((val < 0.3), { ~sensitive11 = 0;			 });
 	}

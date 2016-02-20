@@ -60,14 +60,13 @@ OSCdef( \controlSzene, { |msg|
 ("/Users/marcello/Music/Supercollider/pdw/minibees/zeroVol.scd").load;
 	}
 	{msg[1] == 4}{
-
-	~minibee1 = 0;
+	~minibee1 = 11;
 		~minibee2 = 0;
-		~minibee3 = 1;
-		~minibee4 = 0;
+		~minibee3 = 10;
+		~minibee4 = 8;
 
 		~oscar.sendMsg("/sound", 3);
-~oscar.sendMsg("/minibee", 4);
+		~oscar.sendMsg("/minibee", 3);
 
 ("/Users/marcello/Music/Supercollider/pdw/minibees/zeroVol.scd").load;
 	}
@@ -93,18 +92,23 @@ OSCdef( \controlSzene, { |msg|
 		~oscar.sendMsg("/minibee", 3);
 
 ("/Users/marcello/Music/Supercollider/pdw/minibees/zeroVol.scd").load;
+
+
 	}
-	{msg[1] == 7}{
-	~minibee1 = 11;
+	{msg[1] == 4}{ // ibeat
+
+	~minibee1 = 0;
 		~minibee2 = 0;
-		~minibee3 = 10;
-		~minibee4 = 8;
+		~minibee3 = 1;
+		~minibee4 = 0;
 
 		~oscar.sendMsg("/sound", 3);
-		~oscar.sendMsg("/minibee", 3);
+~oscar.sendMsg("/minibee", 4);
 
 ("/Users/marcello/Music/Supercollider/pdw/minibees/zeroVol.scd").load;
 	}
+
+
 	{msg[1] == 8}{
 	~minibee1 = 0;
 		~minibee2 = 0;
@@ -118,7 +122,8 @@ OSCdef( \controlSzene, { |msg|
 	};
 }, "/szene", nil, 57120 );
 
-)
+);
+/*
 n = NetAddr("127.0.0.1", 57120);
 n.sendMsg("/szene", 0);
 
@@ -158,7 +163,7 @@ n.sendMsg("/szene", 8);
 		~oscar.sendMsg("/sound", 0);
 
 
-/*
+
 1. ligeti louder
 3. pad has to move more dynamically
 
@@ -167,4 +172,4 @@ n.sendMsg("/szene", 8);
 5. complexB, quick movement generates clicks
 
 2.
-
+*/
