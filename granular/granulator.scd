@@ -17,6 +17,7 @@ var ratef; ratef = rrand(0.5, 1.5); Synth(\granS, [\bufNum, ~b[~sample_id].bufnu
 ~gran1.set(\bufNum, 16, \pos, 0.95, \trigRate1, 1, \dur, 0.3);
 */
 
+
 (
 ~path="/Users/marcello/Music/Samples/metabody_tolouse/*.wav";
 ~path.pathMatch;
@@ -34,7 +35,7 @@ var ratef; ratef = rrand(0.5, 1.5); Synth(\granS, [\bufNum, ~b[~sample_id].bufnu
 ];
 
 ~gran1 = Synth(\gran);
-~gran2 = Synth(\gran);
+//~gran2 = Synth(\gran);
 
 
 

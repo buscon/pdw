@@ -1,22 +1,24 @@
 (
 s.waitForBoot{
-	("/Users/marcello/Music/Supercollider/pdw/main/synths_noreverb.scd").load;
-("/Users/marcello/Music/Supercollider/pdw/main/ndefs_noreverb.scd").load;
-("/Users/marcello/Music/Supercollider/pdw/main/reverb.scd").load;
+	("/Users/marcello/Music/Supercollider/pdw/mt030/synths_noreverb.scd").load;
+("/Users/marcello/Music/Supercollider/pdw/mt030/ndefs_noreverb.scd").load;
+("/Users/marcello/Music/Supercollider/pdw/mt030/reverb.scd").load;
 	};
 )
-("/Users/marcello/Music/Supercollider/pdw/main/zeroVol.scd").load;
+("/Users/marcello/Music/Supercollider/pdw/minibees/zeroVol.scd").load;
 
 ("/Users/marcello/Music/Supercollider/miniBee/ssdn_python/pydon/scripts/pydoncli.py -c /Users/marcello/Music/Supercollider/miniBee/ssdn_python/pydon/4minibees_new.xml").runInTerminal;
-(
-("/Users/marcello/Music/Supercollider/pdw/main/minibees_data.scd").load;
-("/Users/marcello/Music/Supercollider/pdw/main/plot_minibee.scd").load;
 
-("/Users/marcello/Music/Supercollider/pdw/main/controlPatch.scd").load;
-("/Users/marcello/Music/Supercollider/pdw/main/controlScenes_new.scd").load;
+(
+("/Users/marcello/Music/Supercollider/pdw/mt030/minibees_data.scd").load;
+("/Users/marcello/Music/Supercollider/pdw/mt030/plot_minibee.scd").load;
+
+("/Users/marcello/Music/Supercollider/pdw/mt030/controlPatch.scd").load;
+//("/Users/marcello/Music/Supercollider/pdw/mt030/controlScenes_new.scd").load;
 s.meter
 )
 
+~minibee2 = 5;
 
 ~fw.set(\scale_val,  [0.30238105197449, 0.42763138470637, 0.5339359416674, 0.71271897451062].choose.postln)
 
@@ -32,10 +34,25 @@ s.meter
 ~pad.set(\scale_freq, 1.2472582053936);
 
 ~pad.set(\scale_freq, (Scale.bartok.ratios.choose * 1.5).postln);
-
-
-~stranga.set(\pitch, (Scale.bartok.ratios.choose * 0.4).postln);
+~drC.stop
+~minibee2 = 3;
+~minibee2 = 8;
+~minibee2
+~stranga.set(\pitch, (Scale.bartok.ratios.choose * 0.5).postln);
 ~stranga.set(\pitch, 0.5993228307497); // tief
 ~stranga.set(\pitch, 0.67347722898531); // mitte
 ~stranga.set(\pitch, 0.84534797668457); // hoch
 ~stranga.set(\pitch, 1.048814953812); // sehr hoch
+~minibee4 = 0;
+~minibee2 = 0;
+~minibee1 = 0;
+
+~minibee2 = 9;
+~drC.set(\freq_scale, (Scale.bartok.ratios.choose * 0.7 * 2).postln);
+~minibee2 = 3;
+~gran1.set(\rate, Scale.bartok.ratios.choose * 0.7)
+~gran2.free
+
+~minibee2 = 12;
+		~string.set(\freq_dev, 3);
+~string.set(\freq_scale, Scale.bartok.ratios.choose * 1);

@@ -198,7 +198,7 @@ size = 100;
 }).play;
 
 
-~drC = Ndef(\droneCymbal, {arg lowPassFreq  =400, lowPassQ = 1, freq_scale = 0.7, volume = 0, pan = 0;
+~drC = Ndef(\droneCymbal, {arg lowPassFreq  =400, lowPassQ = 1, freq_scale = 0.7, volume = 0,volume2 = 0, pan = 0;
 	var lfo, num_freq, ratios, output, volFilter;
 	num_freq = 50;//MouseY.kr(1,50);//50;
 	ratios = Scale.whole.ratios;
@@ -209,7 +209,7 @@ size = 100;
 		freq_scale
 		,{rrand(0.1, 1)}.dup(num_freq), 0.25).mean, (lowPassFreq * lfo.range(0.7, 1.2) ).lag(0.3)
 		, lowPassQ.reciprocal.lag(0.3), lowPassFreq.linlin(100, 8000, 1, 12).lag(0.3)
-	) * 1/4 * volume;
+	) * 1/4 * Lag3UD.kr(volume * volume2, 0, 0.5);
 
 	output = Out.ar(0, Pan2.ar(output, pan));
 

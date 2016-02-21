@@ -3,6 +3,7 @@ todo:
 4.
 - fix the sensitives!
 */
+~string.stop
 (
 ~data_sel = { arg val, longval, which, group;
 	var res,  time, now;
@@ -59,16 +60,15 @@ todo:
 	}
 	{ which == 3 } {
 			var sample_id;
-
 		//granulator
 
 
-		~sample_id1 = 3;
+		~sample_id1 = 5;
 
 		~gran1.set(\bufNum, ~b[~sample_id1].bufnum);
 		~gran1.set(\pan, 0);
 
-		~gran1.set( \volume, val.linlin(0, 0.1 , 0, ~samples_data[~sample_id1][2]));
+		~gran1.set( \volume, val.linlin(0, 0.1, 0, ~samples_data[~sample_id1][2]));
 		~gran1.set( \volume2, val.linlin(0.1, 0.7, 1, ~samples_data[~sample_id1][3]));
 		~gran1.set( \volume3, val.linlin(0.6, 1, 1, ~samples_data[~sample_id1][4]));
 
@@ -91,12 +91,17 @@ todo:
 		});
 		if((~sensitive3 == 0) && (val > 0.04), {
 			~sensitive3 = 1;
-			Synth(\granS, [\bufNum, ~b[~sample_id1].bufnum, \volume, rrand(0.5, 1.5), \rate, ~ratef, \dur, rrand(0.1, 0.2), \pan, -1, \pos, ~samples_data[~sample_id1][8].choose, \cutoff, ~ratef.linlin(0.7, 1.24, 3000, 500)]);
+			Synth(\granS, [\bufNum, ~b[~sample_id1].bufnum, \volume, rrand(0.5, 1.5).postln, \rate, ~ratef, \dur, rrand(0.1, 0.2), \pan, -1, \pos, ~samples_data[~sample_id1][8].choose, \cutoff, ~ratef.linlin(0.7, 1.24, 3000, 500)]);
 
 
 
 		});
-		if((val < 0.04), { ~sensitive3 = 0;			 });
+		if((~sensitive3 == 1) &&(val < 0.04), {
+			~sensitive3 = 0;
+					~ratef = (Scale.bartok.ratios.choose * 0.7);
+						~gran1.set(\pos, ~samples_data[~sample_id1][8].choose);
+			~gran1.set(\rate, ~ratef.postln);
+		});
 
 	}
 	{ which == 4 } {
@@ -213,7 +218,7 @@ todo:
 
 		// todo: pops are too loud, too much q? - sensitive must be something different, some kind of short and quiet puff
 		//val.postln;
-		~pad.set(\volume, val.linlin(0.05, 0.1, 0.1, 0.5));
+		~pad.set(\volume, val.linlin(0.05, 0.1, 0, 0.5));
 			//filter_mod = MouseX.kr(0.1, 4.5, 1); rq_mod = MouseY.kr(0.1, 2.0);
 		~pad.set(\volume2, val.linlin(0.3, 1, 1, 3.5));
 
@@ -233,7 +238,7 @@ todo:
 	{ which == 8 } {
 		//val = val.linlin(0,1,0,0.7);
 		~stranga.set(\volume, val.linlin(0, 0.05, 0, 1.5));
-		~stranga.set(\volume2, val.linexp(0.1, 1, 1, 7));
+		~stranga.set(\volume2, val.linexp(0.1, 1, 1, 5));
 
 		~stranga.set(\speed, val.linlin(0, 0.8, 0, 5));
 		~stranga.set(\pitch_dev, val.linlin(0.5, 1, 0.1, 2));
@@ -248,14 +253,21 @@ todo:
 	//speed = MouseX.kr(0, 10);
 	//decay_time = MouseY.kr(6, 1);
 	//pitch_dev = GrayNoise.kr(0.01).range(0.001, 0.009).poll;
+		if((~sensitive8 == 0) && (val > 0.8), {
+			~sensitive8 = 1;
+
+			Synth(\strangaS, [\volume, rrand(0.2, 0.5) * 2.25, \pitch, rrand(0.3, 0.8), \pitch_fine, rrand(0.1, 0.5), \pitch_dev, rrand(0.3, 0.7), \decay_time, rrand(1.0, 7.0), \roomsize, rrand(80, 150), \revtime , rrand(2.0,6.0), \pan, 1  ]);
+		});
+		if((val < 0.8), { ~sensitive8 = 0;			 });
 
 			}
 	{ which == 9 } {
 
-		~drC.set(\volume, val.linlin(0.05, 0.15, 0, 2.5));
+		~drC.set(\volume, val.linlin(0.05, 0.15, 0, 1));
 
 		~drC.set(\lowPassFreq, val.linexp(0.1, 0.8, 300, 8000));
 		~drC.set(\lowPassQ, val.linlin(0.1, 1, 2, 1));
+		~drC.set(\volume2, val.linlin(0.3, 1, 1, 8));
 
 		if((~sensitive9 == 0) && (val > 0.06), {
 			~sensitive9 = 1;

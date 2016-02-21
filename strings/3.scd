@@ -35,7 +35,7 @@ Synth(\stringS, [\pan, 1]);
 	//string = BRF.ar(string, brFreq, 0.5);
 	//string = Median.ar(3, string);
 	string = LeakDC.ar(LPF.ar(Pan2.ar(string, pan), lpfF)) * volume * volume2;
-	string = GVerb.ar(string.clip2, 200, 1) * 0.5;
+//	string = GVerb.ar(string.clip2, 200, 1) * 0.5;
 //	string = GVerb.ar(string, 100, 1.85, 0.41, 0.19, 0.71, 0.35, 0.28 ) * 0.5;
 //	string = GVerb.ar(string, 20, 1.24, 0.1, 0.95, 0.71, 0.17, 0.14 ) * 0.5;
 
